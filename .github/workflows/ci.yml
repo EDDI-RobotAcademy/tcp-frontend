@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: Frontend CLI
+    name: Frontend CI
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -44,6 +44,6 @@ jobs:
     - name: send FRONTEND_TEST_FINISH_TRIGGER
       run: |
         curl -S -X POST https://api.github.com/repos/${{ github.repository }}/dispatches \
-            -H 'Accept: application/vnd.github.v3+json' \
-            -u ${{ secrets.GHCR_TOKEN }} \
-            -d '{"event_type": "FRONTEND_TEST_FINISH_TRIGGER", "client_payload": { "repository":  "'"$GITHUB_REPOSITORY"'"}}'
+          -H 'Accept: application/vnd.github.v3+json' \
+          -u ${{ secrets.GHCR_TOKEN }} \
+          -d '{"event_type": "FRONTEND_TEST_FINISH_TRIGGER", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'" }}'
