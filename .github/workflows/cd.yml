@@ -29,13 +29,15 @@ jobs:
         node-version: '20'
 
     - name: Install Dependencies
-      if: steps:cache.outputs.cache-hit != 'true'
+
+      if: steps.cache.outputs.cache-hit != 'true'
+
       run: |
         npm ci --legacy-peer-deps
 
     - name: Create .env.production for Continuous Deploy
       run: |
-        echo: "${{ secrets.ENV_PRODUCTION }}" > .env.production
+        echo "${{ secrets.ENV_PRODUCTION }}" > .env.production
         cat .env.production
 
     - name: Build
@@ -58,7 +60,7 @@ jobs:
         host: ${{ secrets.HOST_IP }}
         username: ec2-user
         key: ${{ secrets.PRIVATE_KEY }}
-        source: "./dist/**"
+        source: "./dist/*"
         target: "/home/ec2-user/tcp/actions-frontend"
 
     - name: Remove Github Actions IP From Security Group
@@ -70,7 +72,7 @@ jobs:
       uses: webfactory/ssh-agent@v0.5.0
       with:
         ssh-private-key: ${{ secrets.PRIVATE_KEY }}
-        
+
   deploy:
     name: Deploy to Production
     needs: build
@@ -79,4 +81,4 @@ jobs:
       - name: Deploy to Production
         run: |
           echo "ready for deploy"
-          
+
