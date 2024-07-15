@@ -1,0 +1,49 @@
+name: CI (Continuous Integration)
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build:
+    name: Frontend CI
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20'
+
+    - name: Cache dependencies
+      id: cache
+      uses: actions/cache@v3
+      with:
+        path: '**/node_modules'
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    - name: Install Dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: |
+        npm ci
+
+    - name: Create .env development for CI
+      run: |
+        pwd
+        echo "${{ secrets.ENV_DEVELOPMENT }}" > .env.development
+        cat .env.development
+
+    - name: Real Test
+      run: |
+        npm run test:unit
+
+    - name: send FRONTEND_TEST_FINISH_TRIGGER
+      run: |
+        curl -S -X POST https://api.github.com/repos/${{ github.repository }}/dispatches \
+          -H 'Accept: application/vnd.github.v3+json' \
+          -u ${{ secrets.GHCR_TOKEN }} \
+          -d '{"event_type": "FRONTEND_TEST_FINISH_TRIGGER", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'" }}'
