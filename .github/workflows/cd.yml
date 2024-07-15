@@ -43,6 +43,11 @@ jobs:
         npm run build
         ls
 
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.5.0
+      with:
+        ssh-private-key: ${{ secrets.PRIVATE_KEY }}
+
     - name: Add Github Actions IP to Security Group
       run: |
         aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
@@ -50,16 +55,22 @@ jobs:
     - name: SCP Action
       uses: appleboy/scp-action@master
       with:
-        host: ${{ secrets.HOST_PROD }}
+        host: ${{ secrets.HOST_IP }}
         username: ec2-user
         key: ${{ secrets.PRIVATE_KEY }}
-        source: "./build*"
+        source: "./dist/**"
         target: "/home/ec2-user/tcp/actions-frontend"
 
     - name: Remove Github Actions IP From Security Group
       run: |
         aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
+    - name: SSH Agent Cleanup
+      if: ${{ always() }}
+      uses: webfactory/ssh-agent@v0.5.0
+      with:
+        ssh-private-key: ${{ secrets.PRIVATE_KEY }}
+        
   deploy:
     name: Deploy to Production
     needs: build
