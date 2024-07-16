@@ -28,6 +28,15 @@ jobs:
       with:
         node-version: '20'
 
+    - name: Cache dependencies
+      id: cache
+      uses: actions/cache@v3
+      with:
+        path: '**/node_modules'
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
     - name: Install Dependencies
       if: steps.cache.outputs.cache-hit != 'true'
       run: |
@@ -58,7 +67,7 @@ jobs:
         host: ${{ secrets.HOST_IP }}
         username: ec2-user
         key: ${{ secrets.PRIVATE_KEY }}
-        source: "./dist/*"
+        source: "./dist/**"
         target: "/home/ec2-user/tcp/actions-frontend"
 
     - name: Remove Github Actions IP From Security Group
@@ -70,31 +79,37 @@ jobs:
       uses: webfactory/ssh-agent@v0.5.0
       with:
         ssh-private-key: ${{ secrets.PRIVATE_KEY }}
-  
+
   deploy:
     name: Deploy to Production
     needs: build
     runs-on: [ self-hosted, deploy-tcp-frontend ]
     steps:
-      #   - name: Setup SSH
-      #   uses: webfactory/ssh-agent@v0.5.0
-      #   with:
-      #     ssh-private-key: ${{ secrets.PRIVATE_KEY }}
+      - name: Get Github Actions IP
+        id: ip
+        uses: haythem/public-ip@v1.2
+        
+      - name: Configure AWS IAM Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
 
-      # - name: Add Github Actions IP to Security Group
-      #   run: |
-      #     aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
-      
+      - name: Add Github Actions IP to Security Group
+        run: |
+          aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+    
       - name: Deploy to Production
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.HOST_IP }}
           username: ec2-user
-          password: ${{ secrets.PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.PRIVATE_KEY }}
           script_stop: true
           script: |
-            cd tcp/vue-frontend
+            pwd
+            cd /home/ec2-user/tcp/vue-frontend
             cp -r /home/ec2-user/tcp/actions-frontend/dist/* ./html/
 
             docker image prune -f
@@ -102,12 +117,7 @@ jobs:
 
             docker-compose up -d
 
-      # - name: Remove Github Actions IP From Security Group
-      #   run: |
-      #     aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
-
-      # - name: SSH Agent Cleanup
-      #   if: ${{ always() }}
-      #   uses: webfactory/ssh-agent@v0.5.0
-      #   with:
-      #     ssh-private-key: ${{ secrets.PRIVATE_KEY }}
+      - name: Remove Github Actions IP From Security Group
+        run: |
+          aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+[출처] [ 링크쌤 컬럼 ] 조직 저장소 Frontend CD 구성 시 Github Actions Runner 연결 (에디로봇아카데미) | 작성자 링크쌤
