@@ -4,7 +4,7 @@ services:
     image: "nginx:latest"
     container_name: frontend-deploy-nginx
     restart: unless-stopped
-    volumns:
+    volumes:
       - /home/ec2-user/tcp/vue-frontend/conf:/etc/nginx/conf.d
       - /home/ec2-user/tcp/vue-frontend/html:/usr/share/nginx/html
     ports:
