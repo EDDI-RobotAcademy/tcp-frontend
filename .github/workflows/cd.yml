@@ -90,7 +90,8 @@ jobs:
         with:
           host: ${{ secrets.HOST_IP }}
           username: ec2-user
-          key: ${{ secrets.PRIVATE_KEY }}
+          password: ${{ secrets.PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
           script_stop: true
           script: |
             cd tcp/vue-frontend
