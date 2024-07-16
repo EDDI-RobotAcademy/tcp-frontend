@@ -120,4 +120,3 @@ jobs:
       - name: Remove Github Actions IP From Security Group
         run: |
           aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
-[출처] [ 링크쌤 컬럼 ] 조직 저장소 Frontend CD 구성 시 Github Actions Runner 연결 (에디로봇아카데미) | 작성자 링크쌤
