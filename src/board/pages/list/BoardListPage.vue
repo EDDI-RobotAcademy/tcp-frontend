@@ -15,8 +15,7 @@
         <v-pagination
             v-model="pagination.page"
             :length="Math.ceil(boards.length / perPage)"
-            color="primary"
-            @input="updateItems"/>
+            color="primary"/>
     </v-container>
 </template>
 

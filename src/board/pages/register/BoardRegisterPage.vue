@@ -2,17 +2,17 @@
     <v-container>
         <v-row>
             <v-col cols="12">
-                <v-text-field v-model="title" label="제목"/>
+                <v-text-field v-model="title" label="제목" />
             </v-col>
         </v-row>
         <v-row>
             <v-col cols="12">
-                <v-text-field v-model="writer" label="작성자"/>
+                <v-text-field v-model="writer" label="작성자" />
             </v-col>
         </v-row>
         <v-row>
             <v-col cols="12">
-                <v-textarea v-model="content" label="내용" auto-grow/>
+                <v-textarea v-model="content" label="내용" auto-grow />
             </v-col>
         </v-row>
         <v-row>
@@ -46,7 +46,7 @@ export default {
                 writer: this.writer,
                 content: this.content,
             }
-
+            console.log('payload:', payload)
             const board = await this.requestCreateBoardToDjango(payload)
             this.$router.go(-1)
         },
