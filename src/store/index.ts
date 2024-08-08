@@ -1,5 +1,8 @@
-import boardModule from '@/board/store/boardModule'
 import { createStore } from 'vuex'
+
+import accountModule from '@/account/store/accountModule'
+import authenticationModule from '@/authentication/store/authenticationModule'
+import communityModule from '@/community/store/communityModule'
 
 export default createStore({
   state: {
@@ -11,6 +14,8 @@ export default createStore({
   actions: {
   },
   modules: {
-    boardModule
+    accountModule,
+    authenticationModule,
+    communityModule,
   }
 })

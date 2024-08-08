@@ -6,8 +6,9 @@ interface Env {
     }
 }
 
+// .env 파일을 통해 설정을 읽어옵니다.
 const env: Env = {
-    mode: process.env.MODE_ENV,
+    mode: process.env.NODE_ENV,
     api: {
         MAIN_API_URL: process.env.VUE_APP_BASE_URL,
         AI_BASE_URL: process.env.VUE_APP_AI_BASE_URL,
