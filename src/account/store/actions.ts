@@ -4,7 +4,7 @@ import { AxiosResponse } from "axios"
 import axiosInst from "@/utility/axiosInstance"
 
 export type AccountActions = {
-    requestEmailDuplicationCheckToDjango(context: ActionContext<AccountState, any>, email: string): Promise<boolean>
+    requestEmailDuplicationCheckToDjango(context: ActionContext<AccountState, any>, payload: any): Promise<boolean>
     requestNicknameDuplicationCheckToDjango(context: ActionContext<AccountState, any>, payload: any): Promise<boolean>
     requestCreateNewAccountToDjango(context: ActionContext<AccountState, any>, accountInfo: { email: string, nickname: string }): Promise<void>
     requestNicknameToDjango(context: ActionContext<AccountState, any>, nickname: string): Promise<Account>
@@ -15,10 +15,22 @@ export type AccountActions = {
 }
 
 const actions: AccountActions = {
-    async requestEmailDuplicationCheckToDjango(context: ActionContext<AccountState, any>, email: string): Promise<boolean> {
-        const response = await axiosInst.djangoAxiosInst.post(
-            '/account/email-duplication-check', { email })
-        return response.data.isDuplicate
+    async requestEmailDuplicationCheckToDjango(context: ActionContext<AccountState, any>, payload: any): Promise<boolean> {
+        const { newEmail } = payload
+        
+        return axiosInst.djangoAxiosInst.post(
+            '/account/email-duplication-check',
+            { newEmail: newEmail }
+        )
+            .then((res) => {
+                if (res.data.isDuplicate) {
+                    alert('중복된 이메일입니다.')
+                    return true
+                } else {
+                    alert('사용 가능한 이메일입니다.')
+                    return false
+                }
+            })
     },
     async requestNicknameDuplicationCheckToDjango(context: ActionContext<AccountState, any>, payload: any): Promise<boolean> {
         const { newNickname } = payload
@@ -28,12 +40,12 @@ const actions: AccountActions = {
             { newNickname: newNickname }
         )
             .then((res) => {
-                if (res.data) {
-                    alert('사용 가능한 닉네임입니다.')
-                    return false
-                } else {
+                if (res.data.isDuplicate) {
                     alert('중복된 닉네임입니다.')
                     return true
+                } else {
+                    alert('사용 가능한 닉네임입니다.')
+                    return false
                 }
             })
     },

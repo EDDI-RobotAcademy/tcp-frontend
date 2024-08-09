@@ -106,6 +106,7 @@ export default {
         return {
             formValid: false,
             email: '',
+            password: '',
             nickname: '',
             emailRules: [
                 v => !!v || 'Email 은 필수입니다!',
@@ -122,6 +123,7 @@ export default {
                 v => /^\d+$/.test(v) || '출생년도는 숫자여야 합니다!',
                 v => v.length === 4 || '출생년도는 4자리여야 합니다!',
             ],
+            loginType: "KAKAO",
         }
     },
     async created () {
@@ -168,10 +170,11 @@ export default {
             if (this.$refs.form.validate()) {
                 const accountInfo = {
                     email: this.email,
+                    password: this.password,
                     nickname: this.nickname,
-                    // password: this.password,     // 비밀번호 추가
                     gender: this.gender,            // 성별 추가
                     birthyear: this.birthyear,      // 생년월일 추가
+                    loginType: this.loginType,
                 }
                 await this.requestCreateNewAccountToDjango(accountInfo)
                 console.log('전송한 데이터:', accountInfo)

@@ -8,14 +8,43 @@
           </v-card-title>
           <v-responsive class="mx-auto" min-width="400">
             <v-form ref="form" v-model="formValid" lazy-validation>
-              <v-text-field
-                v-model="email"
-                label="Email"
-                variant="solo"
-                required
-                :rules="emailRules"
-                placeholder="example@gmail.com"
-              />
+              <v-row align="center">
+                <v-col cols="10">
+                  <v-text-field
+                    v-model="email"
+                    label="example@gmail.com"
+                    required
+                    :rules="emailRules"
+                    :error-messages="emailErrorMessages"
+                  />
+                </v-col>
+                <v-col cols="2">
+                  <v-btn
+                    color="rgb(200, 255, 0)"
+                    style="color: black; width: 90px"
+                    small
+                    :disabled="!isEmailFormatted || isEmailValid"
+                    type="button"
+                    @click="checkEmailDuplication"
+                  >
+                    중복 검사
+                  </v-btn>
+                </v-col>
+              </v-row>
+
+              <v-row align="center">
+                <v-col cols="10">
+                  <v-text-field
+                    v-model="password"
+                    label="password"
+                    required
+                    :rules="passwordRules"
+                    :append-inner-icon="visible ? 'mdi-eye' : 'mdi-eye-off'"
+                    :type="visible ? 'text' : 'password'"
+                    @click:append-inner="visible = !visible"
+                  />
+                </v-col>
+              </v-row>
 
               <v-row align="center">
                 <v-col cols="10">
@@ -24,16 +53,15 @@
                     label="Nickname"
                     required
                     :rules="nicknameRules"
-                    :error-message="nicknameErrorMessages"
+                    :error-messages="nicknameErrorMessages"
                   />
                 </v-col>
-
                 <v-col cols="2">
                   <v-btn
-                    color="gb(200, 255, 0)"
+                    color="rgb(200, 255, 0)"
                     style="color: black; width: 90px"
                     small
-                    :disabled="nickname == '' || isNicknameValid == true"
+                    :disabled="nickname === '' || isNicknameValid"
                     type="button"
                     @click="checkNicknameDuplication"
                   >
@@ -99,30 +127,54 @@ export default {
     return {
       formValid: false,
       email: "",
+      password: "",
       nickname: "",
       emailRules: [
         (v) => !!v || "Email 은 필수입니다!",
         (v) => /.+@.+\..+/.test(v) || "영문자로 시작하는 유효한 Email 주소를 입력하세요!",
       ],
+      passwordRules: [
+        (v) => !!v || "Password는 필수입니다!",
+        (v) => v.length >= 8 || "Password는 8자리 이상이어야 합니다!",
+        (v) => v.length <= 20 || "Password는 20자리 이하여야 합니다!",
+        (v) => /[a-zA-Z]/.test(v) || "Password에는 적어도 하나의 영문자가 포함되어야 합니다!",
+        (v) => /\d/.test(v) || "Password에는 적어도 하나의 숫자가 포함되어야 합니다!",
+      ],
       nicknameRules: [(v) => !!v || "Nickname은 필수입니다!"],
-      // passwordRules: [v => !!v || 'Password는 필수입니다!'],
       gender: "man",
       birthyear: "",
-      nicknameErrorMessage: [],
+      emailErrorMessages: [],
+      isEmailValid: false,
+      nicknameErrorMessages: [],
       isNicknameValid: false,
       birthyearRules: [
         (v) => !!v || "출생년도는 필수입니다!",
         (v) => /^\d+$/.test(v) || "출생년도는 숫자여야 합니다!",
         (v) => v.length === 4 || "출생년도는 4자리여야 합니다!",
       ],
+      loginType: "NORMAL",
+      visible: false,
     };
   },
-  async created() {
-    await this.requestUserInfo();
+  watch: {
+    email(newEmail) {
+      // 이메일이 변경될 때마다 중복 검사 상태 초기화
+      this.isEmailValid = false;
+      this.emailErrorMessages = [];
+    },
+    nickname(newNickname) {
+      // 닉네임이 변경될 때마다 중복 검사 상태 초기화
+      this.isNicknameValid = false;
+      this.nicknameErrorMessages = [];
+    },
   },
   computed: {
     isValidForSubmission() {
       return this.formValid && this.isNicknameValid && this.age !== 0;
+    },
+    isEmailFormatted() {
+      // 이메일이 유효한 형식인지 확인
+      return this.emailRules.every((rule) => rule(this.email) === true);
     },
   },
   methods: {
@@ -131,23 +183,14 @@ export default {
       "requestAddRedisAccessTokenToDjango",
     ]),
     ...mapActions(accountModule, [
+      "requestEmailDuplicationCheckToDjango",
       "requestNicknameDuplicationCheckToDjango",
       "requestCreateNewAccountToDjango",
     ]),
 
-    // async requestUserInfo () {
-    //     try {
-    //         const userInfo = await this.requestUserInfoToDjango()
-    //         this.email = userInfo.kakao_account.email
-    //     } catch (error) {
-    //         console.error('에러:', error)
-    //         alert('사용자 정보를 가져오는데 실패하였습니다!')
-    //     }
-    // },
     async requestUserInfo() {
       try {
         const userInfo = await this.requestUserInfoToDjango();
-        console.log(userInfo); // userInfo 구조 확인
         if (userInfo && userInfo.kakao_account && userInfo.kakao_account.email) {
           this.email = userInfo.kakao_account.email;
         } else {
@@ -159,13 +202,33 @@ export default {
         this.email = ""; // 에러 발생 시 기본 이메일 설정
       }
     },
+    async checkEmailDuplication() {
+      this.isEmailValid = false;
+      console.log("이메일 중복 검사 누름");
+      try {
+        const isDuplicatedEmail = await this.requestEmailDuplicationCheckToDjango({
+          newEmail: this.email.trim(),
+        });
+        if (isDuplicatedEmail) {
+          this.emailErrorMessages = ["이 email은 이미 사용중입니다!"];
+          this.isEmailValid = false;
+        } else {
+          this.emailErrorMessages = [];
+          this.isEmailValid = true;
+        }
+      } catch (error) {
+        alert("이메일 중복 확인에 실패했습니다!");
+        this.isEmailValid = false;
+      }
+    },
     async checkNicknameDuplication() {
+      this.isNicknameValid = false;
       console.log("닉네임 중복 검사 누름");
       try {
-        const isDuplicate = await this.requestNicknameDuplicationCheckToDjango({
+        const isDuplicatedNickname = await this.requestNicknameDuplicationCheckToDjango({
           newNickname: this.nickname.trim(),
         });
-        if (isDuplicate) {
+        if (isDuplicatedNickname) {
           this.nicknameErrorMessages = ["이 nickname은 이미 사용중입니다!"];
           this.isNicknameValid = false;
         } else {
@@ -183,9 +246,10 @@ export default {
         const accountInfo = {
           email: this.email,
           nickname: this.nickname,
-          // password: this.password,        // 비밀번호 추가
+          password: this.password,
           gender: this.gender, // 성별 추가
           birthyear: this.birthyear, // 생년월일 추가
+          loginType: this.loginType
         };
         await this.requestCreateNewAccountToDjango(accountInfo);
         console.log("전송한 데이터:", accountInfo);
@@ -200,6 +264,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 .v-card {

@@ -127,7 +127,7 @@ export default {
         },
 
         passwordRequired(v) {
-            return !!v || "비밀번호는 4~60자 사이여야 합니다.";
+            return !!v || "비밀번호는 8~20자 사이여야 합니다.";
         },
     },
 };
