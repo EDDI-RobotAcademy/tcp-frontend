@@ -117,7 +117,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 const authenticationModule = "authenticationModule";
 const accountModule = "accountModule";
@@ -157,7 +157,7 @@ export default {
     };
   },
   watch: {
-    email(newEmail) {
+    email(email) {
       // 이메일이 변경될 때마다 중복 검사 상태 초기화
       this.isEmailValid = false;
       this.emailErrorMessages = [];
@@ -207,7 +207,7 @@ export default {
       console.log("이메일 중복 검사 누름");
       try {
         const isDuplicatedEmail = await this.requestEmailDuplicationCheckToDjango({
-          newEmail: this.email.trim(),
+          email: this.email.trim(),
         });
         if (isDuplicatedEmail) {
           this.emailErrorMessages = ["이 email은 이미 사용중입니다!"];
@@ -253,11 +253,7 @@ export default {
         };
         await this.requestCreateNewAccountToDjango(accountInfo);
         console.log("전송한 데이터:", accountInfo);
-
-        const accessToken = localStorage.getItem("accessToken");
-        const email = accountInfo.email;
-        console.log("register submitForm email:", email);
-        await this.requestAddRedisAccessTokenToDjango({ email, accessToken });
+        this.$store.state.accountModule.loginType = 'NORMAL';
         this.$router.push("/");
       }
     },

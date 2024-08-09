@@ -12,15 +12,17 @@ export type AccountActions = {
     requestWithdrawalToDjango(context: ActionContext<AccountState, unknown>, payload: { reason: string }): Promise<AxiosResponse>
     requestGenderToDjango(context: ActionContext<AccountState, any>, gender: string): Promise<Account>
     requestBirthyearToDjango(context: ActionContext<AccountState, any>, birthyear: string): Promise<Account>
+    requestCheckPasswordToDjango(context: ActionContext<AccountState, any>,
+        payload: { email: string, password: string }): Promise<boolean>
 }
 
 const actions: AccountActions = {
     async requestEmailDuplicationCheckToDjango(context: ActionContext<AccountState, any>, payload: any): Promise<boolean> {
-        const { newEmail } = payload
+        const { email } = payload
         
         return axiosInst.djangoAxiosInst.post(
             '/account/email-duplication-check',
-            { newEmail: newEmail }
+            { email: email }
         )
             .then((res) => {
                 if (res.data.isDuplicate) {
@@ -124,6 +126,17 @@ const actions: AccountActions = {
             console.error('requestBirthyearToDjango() 문제 발생:', error);
             throw error
         }
+    },
+    async requestCheckPasswordToDjango(context: ActionContext<AccountState, any>, 
+        payload: { email: string, password: string }): Promise<boolean> {
+            try {
+                const res = await axiosInst.djangoAxiosInst.post('/account/password-check', payload)
+                console.log('isCollect', res.data.isCollect)
+                return res.data.isCollect
+            } catch (error) {
+                console.error('requestCheckPasswordToDjango() 문제 발생:', error)
+                throw error
+            }
     },
 };
 

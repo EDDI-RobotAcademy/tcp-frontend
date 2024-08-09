@@ -3,12 +3,12 @@ export interface Account {
 }
 
 export interface AccountState {
-    isLoggedIn: boolean
+    loginType: string
     account: Account | null
 }
 
 const state: AccountState = {
-    isLoggedIn: false,
+    loginType: '',
     account: null
 }
 

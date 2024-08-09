@@ -99,7 +99,7 @@ const actions: AuthenticationActions = {
                 context.commit('REQUEST_IS_AUTHENTICATED_TO_DJANGO', false)
             }
         } catch (error) {
-            console.error('requestPostToFastapi() 중 에러 발생:', error)
+            console.error('requestLogoutToDjango() 중 에러 발생:', error)
             throw error
         }
         localStorage.removeItem("userToken")
