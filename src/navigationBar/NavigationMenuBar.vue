@@ -77,6 +77,8 @@
 import "@mdi/font/css/materialdesignicons.css";
 import router from "@/router";
 import { mapActions, mapState } from "vuex";
+
+const accountModule = "accountModule";
 const authenticationModule = "authenticationModule";
 
 export default {
@@ -114,6 +116,7 @@ export default {
   },
   computed: {
     ...mapState(authenticationModule, ["isAuthenticated"]),
+    ...mapState(accountModule, ["loginType"]),
   },
   methods: {
     ...mapActions(authenticationModule, ["requestLogoutToDjango"]),
@@ -136,7 +139,13 @@ export default {
       router.push("/account/login");
     },
     signOut() {
-      this.requestLogoutToDjango();
+      // this.requestLogoutToDjango();
+      if (this.$store.state.accountModule.loginType == 'KAKAO') {
+        this.requestLogoutToDjango();
+      }
+      if (this.$store.state.accountModule.loginType == 'NORMAL') {
+        this.$store.state.authenticationModule.isAuthenticated = false;
+      }
       router.push("/");
     },
     goToCart() {

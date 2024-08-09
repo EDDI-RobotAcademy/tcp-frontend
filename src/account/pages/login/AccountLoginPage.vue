@@ -71,7 +71,10 @@
 
 <script>
 import router from "@/router";
-import { useStore } from "vuex";
+import { useStore, mapActions, mapState } from "vuex";
+
+const accountModule = 'accountModule'
+const authenticationModule = 'authenticationModule'
 
 export default {
     data: () => ({
@@ -96,8 +99,12 @@ export default {
             goToKakaoLogin,
         };
     },
-
+    computed: {
+    ...mapState(authenticationModule, ["isAuthenticated"]),
+    ...mapState(accountModule, ["loginType"]),
+    },
     methods: {
+        ...mapActions(accountModule, ['requestCheckPasswordToDjango']),
         goToHome() {
             router.push("/");
         },
@@ -106,20 +113,40 @@ export default {
             router.push("/account/register");
         },
 
-        onSubmit() {
+        async onSubmit() {
             if (!this.form) return;
 
             this.loading = true;
 
-            setTimeout(
-                () => ((this.loading = false), (this.login_flag = true)),
-                2000
-            );
+            try {
+                const isCollect = await this.checkPassword();
+                if (isCollect) {
+                // 비밀번호가 일치하면 로그인 성공
+                    this.login_flag = true;
+                    this.$store.state.authenticationModule.isAuthenticated = true;
+                    this.$store.state.accountModule.loginType = 'NORMAL';
+                    console.log('loginType:', this.$store.state.accountModule.loginType)
+                    this.goToHome();
+                } else {
+                // 비밀번호가 일치하지 않으면 로그인 실패
+                    this.login_flag = false;
+                }
+            } catch (error) {
+                console.error("로그인 중 에러 발생: ", error);
+                this.login_flag = false;
+            } finally {
+                this.loading = false;
+            }
 
-            setTimeout(
-                () => ((this.loading = false), (this.login_flag = false)),
-                2000
-            );
+            // setTimeout(
+            //     () => ((this.loading = false), (this.login_flag = true)),
+            //     2000
+            // );
+
+            // setTimeout(
+            //     () => ((this.loading = false), (this.login_flag = false)),
+            //     2000
+            // );
         },
 
         emailRequired(v) {
@@ -128,6 +155,19 @@ export default {
 
         passwordRequired(v) {
             return !!v || "비밀번호는 8~20자 사이여야 합니다.";
+        },
+        async checkPassword() {
+            try {
+                console.log("비밀번호 확인")
+                const payload = {
+                    email: this.email,
+                    password: this.password
+                }
+                const isCollect = await this.requestCheckPasswordToDjango(payload)
+                return isCollect;
+            } catch (error) {
+                console.error("비밀번호 확인 중 에러 발생: ", error)
+            }
         },
     },
 };

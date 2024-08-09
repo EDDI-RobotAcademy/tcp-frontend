@@ -3,12 +3,15 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 const authenticationModule = 'authenticationModule'
 const accountModule = 'accountModule'
 
 export default {
+    computed: {
+    ...mapState(accountModule, ["loginType"]),
+    },
     methods: {
         ...mapActions(authenticationModule,
         ['requestAccessTokenToDjangoRedirection', 'requestUserInfoToDjango', 'requestAddRedisAccessTokenToDjango']),
@@ -21,7 +24,7 @@ export default {
             const email = userInfo.kakao_account.email
             console.log('email: ', email)
 
-            const isEmailDuplication = await this.requestEmailDuplicationCheckToDjango(email)
+            const isEmailDuplication = await this.requestEmailDuplicationCheckToDjango({ email })
             if (isEmailDuplication === true) {
                 console.log('기존 가입 고객입니다.')
                 const accessToken = localStorage.getItem("accessToken");
@@ -31,6 +34,8 @@ export default {
                 } else {
                     console.error('AccessToken is missing');
                 }
+                this.$store.state.accountModule.loginType = 'KAKAO'
+                console.log('loginType:', this.$store.state.accountModule.loginType)
 
                 this.$router.push('/')
             } else {
