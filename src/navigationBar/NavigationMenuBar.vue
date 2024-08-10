@@ -139,7 +139,6 @@ export default {
       router.push("/account/login");
     },
     signOut() {
-      // this.requestLogoutToDjango();
       if (this.$store.state.accountModule.loginType == 'KAKAO') {
         this.requestLogoutToDjango();
       }

@@ -125,7 +125,9 @@ export default {
                     this.login_flag = true;
                     this.$store.state.authenticationModule.isAuthenticated = true;
                     this.$store.state.accountModule.loginType = 'NORMAL';
+                    this.$store.state.accountModule.email = this.email
                     console.log('loginType:', this.$store.state.accountModule.loginType)
+                    console.log('email:', this.$store.state.accountModule.email)
                     this.goToHome();
                 } else {
                 // 비밀번호가 일치하지 않으면 로그인 실패

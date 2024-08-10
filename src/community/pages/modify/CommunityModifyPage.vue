@@ -51,7 +51,7 @@ export default {
   },
   computed: {
     ...mapState(communityModule, ["community"]),
-    ...mapState(accountModule, ["nickname"]),
+    ...mapState(accountModule, ["email"]),
   },
   methods: {
     ...mapActions(communityModule, [
@@ -82,7 +82,8 @@ export default {
     },
   },
   async created() {
-    this.currentUserNickname = await this.requestNicknameToDjango();
+    const email = this.$store.state.accountModule.email
+    this.currentUserNickname = await this.requestNicknameToDjango(email);
 
     await this.requestCommunityToDjango(this.communityId);
     

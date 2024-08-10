@@ -35,6 +35,7 @@ export default {
                     console.error('AccessToken is missing');
                 }
                 this.$store.state.accountModule.loginType = 'KAKAO'
+                this.$store.state.accountModule.email = email
                 console.log('loginType:', this.$store.state.accountModule.loginType)
 
                 this.$router.push('/')
