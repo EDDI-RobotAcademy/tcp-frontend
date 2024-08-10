@@ -7,11 +7,11 @@ export type AccountActions = {
     requestEmailDuplicationCheckToDjango(context: ActionContext<AccountState, any>, payload: any): Promise<boolean>
     requestNicknameDuplicationCheckToDjango(context: ActionContext<AccountState, any>, payload: any): Promise<boolean>
     requestCreateNewAccountToDjango(context: ActionContext<AccountState, any>, accountInfo: { email: string, nickname: string }): Promise<void>
-    requestNicknameToDjango(context: ActionContext<AccountState, any>, nickname: string): Promise<Account>
-    requestEmailToDjango(context: ActionContext<AccountState, any>, email: string): Promise<Account>
+    requestNicknameToDjango(context: ActionContext<AccountState, any>, email: string): Promise<Account>
+    // requestEmailToDjango(context: ActionContext<AccountState, any>, email: string): Promise<Account>
     requestWithdrawalToDjango(context: ActionContext<AccountState, unknown>, payload: { reason: string }): Promise<AxiosResponse>
-    requestGenderToDjango(context: ActionContext<AccountState, any>, gender: string): Promise<Account>
-    requestBirthyearToDjango(context: ActionContext<AccountState, any>, birthyear: string): Promise<Account>
+    requestGenderToDjango(context: ActionContext<AccountState, any>, email: string): Promise<Account>
+    requestBirthyearToDjango(context: ActionContext<AccountState, any>, email: string): Promise<Account>
     requestCheckPasswordToDjango(context: ActionContext<AccountState, any>,
         payload: { email: string, password: string }): Promise<boolean>
 }
@@ -61,11 +61,11 @@ const actions: AccountActions = {
             throw error
         }
     },
-    async requestNicknameToDjango(context: ActionContext<AccountState, any>, nickname: string): Promise<Account> {
+    async requestNicknameToDjango(context: ActionContext<AccountState, any>, email: string): Promise<Account> {
         try {
-            const userToken = localStorage.getItem("userToken");
+            // const userToken = localStorage.getItem("userToken");
             const res: AxiosResponse<Account> =
-                await axiosInst.djangoAxiosInst.post('/account/nickname', { userToken: userToken });
+                await axiosInst.djangoAxiosInst.post('/account/nickname', { email });
             console.log('data:', res.data)
             context.commit('REQUEST_NICKNAME_TO_DJANGO', res.data);
             return res.data
@@ -74,19 +74,19 @@ const actions: AccountActions = {
             throw error
         }
     },
-    async requestEmailToDjango(context: ActionContext<AccountState, any>, email: string): Promise<Account> {
-        try {
-            const userToken = localStorage.getItem("userToken");
-            const res: AxiosResponse<Account> =
-                await axiosInst.djangoAxiosInst.post('/account/email', { userToken: userToken });
-            console.log('data:', res.data)
-            context.commit('REQUEST_EMAIL_TO_DJANGO', res.data);
-            return res.data
-        } catch (error) {
-            console.error('requestEmailToDjango() 문제 발생:', error);
-            throw error
-        }
-    },
+    // async requestEmailToDjango(context: ActionContext<AccountState, any>, email: string): Promise<Account> {
+    //     try {
+    //         const userToken = localStorage.getItem("userToken");
+    //         const res: AxiosResponse<Account> =
+    //             await axiosInst.djangoAxiosInst.post('/account/email', { userToken: userToken });
+    //         console.log('data:', res.data)
+    //         context.commit('REQUEST_EMAIL_TO_DJANGO', res.data);
+    //         return res.data
+    //     } catch (error) {
+    //         console.error('requestEmailToDjango() 문제 발생:', error);
+    //         throw error
+    //     }
+    // },
     async requestWithdrawalToDjango(context: ActionContext<AccountState, unknown>, payload: { reason: string }): Promise<AxiosResponse> {
         console.log('requestWithdrawalToDjango()')
         const userToken = localStorage.getItem("userToken");
@@ -101,11 +101,11 @@ const actions: AccountActions = {
             throw error
         }
     },
-    async requestGenderToDjango(context: ActionContext<AccountState, any>, birth: string): Promise<Account> {
+    async requestGenderToDjango(context: ActionContext<AccountState, any>, email: string): Promise<Account> {
         try {
-            const userToken = localStorage.getItem("userToken");
+            // const userToken = localStorage.getItem("userToken");
             const res: AxiosResponse<Account> =
-                await axiosInst.djangoAxiosInst.post('/account/gender', { userToken: userToken });
+                await axiosInst.djangoAxiosInst.post('/account/gender', { email });
             console.log('data:', res.data)
             context.commit('REQUEST_GENDER_TO_DJANGO', res.data);
             return res.data
@@ -114,11 +114,11 @@ const actions: AccountActions = {
             throw error
         }
     },
-    async requestBirthyearToDjango(context: ActionContext<AccountState, any>, birthyear: string): Promise<Account> {
+    async requestBirthyearToDjango(context: ActionContext<AccountState, any>, email: string): Promise<Account> {
         try {
-            const userToken = localStorage.getItem("userToken");
+            // const userToken = localStorage.getItem("userToken");
             const res: AxiosResponse<Account> =
-                await axiosInst.djangoAxiosInst.post('/account/birthyear', { userToken: userToken });
+                await axiosInst.djangoAxiosInst.post('/account/birthyear', { email });
             console.log('data:', res.data)
             context.commit('REQUEST_BIRTHYEAR_TO_DJANGO', res.data);
             return res.data

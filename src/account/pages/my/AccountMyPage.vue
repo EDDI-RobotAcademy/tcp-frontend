@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 const accountModule = "accountModule";
 
@@ -59,14 +59,19 @@ export default {
       menuOpen: false,
     };
   },
+  computed: {
+    ...mapState(accountModule, ["email"]),
+    },
   async created() {
     try {
-      const nickname = await this.requestNicknameToDjango();
-      const email = await this.requestEmailToDjango();
-      const gender = await this.requestGenderToDjango();
-      const birthyear = await this.requestBirthyearToDjango();
-      this.nickname = nickname;
+      const email = this.$store.state.accountModule.email;
+      console.log('email:', email)
+      const nickname = await this.requestNicknameToDjango(email);
+      // const email = await this.requestEmailToDjango();
+      const gender = await this.requestGenderToDjango(email);
+      const birthyear = await this.requestBirthyearToDjango(email);
       this.email = email;
+      this.nickname = nickname;
       this.gender = gender;
       this.birthyear = birthyear;
     } catch (error) {

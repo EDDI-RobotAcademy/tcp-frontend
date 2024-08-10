@@ -81,6 +81,7 @@ export default {
   computed: {
     ...mapState("communityModule", ["community"]),
     ...mapState("authenticationModule", ["isAuthenticated"]),
+    ...mapState("accountModule", ["email"]),
     isAuthor() {
       if (!this.community || !this.community.writer) {
         return false;
@@ -137,7 +138,8 @@ export default {
     await this.incrementCommunityViewCount(this.communityId);
     this.showNextArrow = Number(this.communityId) !== 1;
 
-    this.currentUserNickname = await this.requestNicknameToDjango();
+    const email = this.$store.state.accountModule.email
+    this.currentUserNickname = await this.requestNicknameToDjango(email);
   },
   watch: {
     async communityId(newId) {

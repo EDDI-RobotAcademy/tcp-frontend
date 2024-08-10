@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 const communityModule = 'communityModule'
 const accountModule = 'accountModule'
@@ -33,6 +33,9 @@ export default {
             content: ''
         }
     },
+    computed: {
+    ...mapState(accountModule, ["email"]),
+    },
     methods: {
         ...mapActions(communityModule, ['requestCreateCommunityToDjango']),
         ...mapActions(accountModule, ['requestNicknameToDjango']),
@@ -43,7 +46,8 @@ export default {
                 alert('제목은 최대 30글자까지 가능합니다.')
                 return
             }
-            const nickname = await this.requestNicknameToDjango()
+            const email = this.$store.state.accountModule.email
+            const nickname = await this.requestNicknameToDjango(email)
             console.log('nickname:', nickname)
             const payload = {
                 title: this.title,
