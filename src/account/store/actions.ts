@@ -26,7 +26,6 @@ const actions: AccountActions = {
         )
             .then((res) => {
                 if (res.data.isDuplicate) {
-                    alert('중복된 이메일입니다.')
                     return true
                 } else {
                     alert('사용 가능한 이메일입니다.')

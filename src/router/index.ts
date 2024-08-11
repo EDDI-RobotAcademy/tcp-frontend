@@ -3,12 +3,14 @@ import HomeRoutes from '@/home/router/HomeRoutes'
 import AccountRoutes from '@/account/router/AccountRoutes'
 import AuthenticationRoutes from '@/authentication/router/AuthenticationRoutes'
 import CommunityRoutes from '@/community/router/CommunityRoutes'
+import GoogleAuthenticationRoutes from '@/googleAuthentication/router/GoogleAuthenticationRoutes'
 
 const routes: Array<RouteRecordRaw> = [
   ...HomeRoutes,
   ...AccountRoutes,
   ...AuthenticationRoutes,
   ...CommunityRoutes,
+  ...GoogleAuthenticationRoutes,
 ]
 
 const router = createRouter({

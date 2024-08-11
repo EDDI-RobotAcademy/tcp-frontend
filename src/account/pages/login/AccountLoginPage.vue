@@ -64,6 +64,8 @@
 
                 <v-btn color="#FEE500" class="black--text mt-2 kakao-login-btn" block @click="goToKakaoLogin">
                 </v-btn>
+                <v-btn color="#ffffff" class="black--text mt-2 google-login-btn" block @click="goToGoogleLogin">
+                </v-btn>
             </div>
         </div>
     </v-container>
@@ -75,6 +77,7 @@ import { useStore, mapActions, mapState } from "vuex";
 
 const accountModule = 'accountModule'
 const authenticationModule = 'authenticationModule'
+const googleAuthenticationModule = 'googleAuthenticationModule'
 
 export default {
     data: () => ({
@@ -94,13 +97,20 @@ export default {
                 "authenticationModule/requestKakaoOauthRedirectionToDjango"
             );
         };
+        const goToGoogleLogin = async () => {
+            await store.dispatch(
+                "googleAuthenticationModule/requestGoogleOauthRedirectionToDjango"
+            )
+        }
 
         return {
             goToKakaoLogin,
+            goToGoogleLogin,
         };
     },
     computed: {
     ...mapState(authenticationModule, ["isAuthenticated"]),
+    ...mapState(googleAuthenticationModule, ["isAuthenticated"]),
     ...mapState(accountModule, ["loginType"]),
     },
     methods: {
@@ -110,7 +120,13 @@ export default {
         },
 
         goToSignUp() {
-            router.push("/account/register");
+
+            if (this.loginType == "GOOGLE") {
+                router.push("/account/google-register")
+            } else {
+                router.push("/account/register");
+            }
+            
         },
 
         async onSubmit() {
@@ -286,6 +302,16 @@ export default {
 
 .kakao-login-btn {
     background-image: url("@/assets/images/fixed/kakao_login.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.google-login-btn {
+    background-image: url("@/assets/images/fixed/google_login.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
