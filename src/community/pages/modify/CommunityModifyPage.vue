@@ -82,7 +82,7 @@ export default {
     },
   },
   async created() {
-    const email = this.$store.state.accountModule.email
+    const email = localStorage.getItem("email")
     this.currentUserNickname = await this.requestNicknameToDjango(email);
 
     await this.requestCommunityToDjango(this.communityId);

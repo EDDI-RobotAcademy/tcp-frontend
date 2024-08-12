@@ -98,6 +98,8 @@ const actions: GoogleAuthenticationActions = {
             throw error
         }
         localStorage.removeItem("googleUserToken")
+        localStorage.removeItem("email")
+        localStorage.removeItem("loginType")
     }
 
     

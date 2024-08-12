@@ -46,7 +46,7 @@ export default {
                 alert('제목은 최대 30글자까지 가능합니다.')
                 return
             }
-            const email = this.$store.state.accountModule.email
+            const email = localStorage.getItem("email")
             const nickname = await this.requestNicknameToDjango(email)
             console.log('nickname:', nickname)
             const payload = {

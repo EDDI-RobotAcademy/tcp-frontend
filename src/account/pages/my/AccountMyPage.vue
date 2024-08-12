@@ -64,7 +64,7 @@ export default {
     },
   async created() {
     try {
-      const email = this.$store.state.accountModule.email;
+      const email = localStorage.getItem("email");
       console.log('email:', email)
       const nickname = await this.requestNicknameToDjango(email);
       // const email = await this.requestEmailToDjango();
