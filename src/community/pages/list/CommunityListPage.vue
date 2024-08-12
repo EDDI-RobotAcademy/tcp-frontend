@@ -68,7 +68,7 @@
     </v-hover>
 
     <div class="text-right mb-4">
-      <v-btn v-if="isAuthenticatedKakao || isAuthenticated || isAuthenticatedNormal" color="white" :to="{ name: 'CommunityRegisterPage' }">
+      <v-btn v-if="isAuthenticatedKakao || isAuthenticatedGoogle || isAuthenticatedNormal" color="white" :to="{ name: 'CommunityRegisterPage' }">
         <v-icon>mdi-pencil</v-icon>
       </v-btn>
     </div>
@@ -95,7 +95,7 @@ export default {
   computed: {
     ...mapState(communityModule, ["communitys"]),
     ...mapState(authenticationModule, ["isAuthenticatedKakao"]),
-    ...mapState(googleAuthenticationModule, ["isAuthenticated"]),
+    ...mapState(googleAuthenticationModule, ["isAuthenticatedGoogle"]),
     ...mapState(accountModule, ["isAuthenticatedNormal"]),
     pagedItems() {
       const startIdx = (this.pagination.page - 1) * this.perPage;

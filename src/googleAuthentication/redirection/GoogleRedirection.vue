@@ -14,13 +14,13 @@ export default {
     },
     methods: {
         ...mapActions(googleAuthenticationModule,
-        ['requestAccessTokenToDjangoRedirection', 'requestUserInfoToDjango', 'requestAddRedisAccessTokenToDjango']),
+        ['requestGoogleAccessTokenToDjangoRedirection', 'requestGoogleUserInfoToDjango', 'requestAddGoogleRedisAccessTokenToDjango']),
         ...mapActions(accountModule, ['requestEmailDuplicationCheckToDjango']),
 
         async setRedirectData () {
             const code = this.$route.query.code
-            await this.requestAccessTokenToDjangoRedirection({ code })
-            const googleUserInfo = await this.requestUserInfoToDjango()
+            await this.requestGoogleAccessTokenToDjangoRedirection({ code })
+            const googleUserInfo = await this.requestGoogleUserInfoToDjango()
             if (!googleUserInfo) {
                 console.error('userInfo is undefined.')
                 return
@@ -31,22 +31,23 @@ export default {
             console.log('email: ', email)
 
             const isEmailDuplication = await this.requestEmailDuplicationCheckToDjango({ email })
+            localStorage.setItem('email', email)
             if (isEmailDuplication === true) {
                 console.log('기존 가입 고객입니다.')
                 const accessToken = localStorage.getItem("googleAccessToken");
                 
                 if (accessToken) {
-                    await this.requestAddRedisAccessTokenToDjango({ email, accessToken });  // Fix: Pass as object directly
+                    await this.requestAddGoogleRedisAccessTokenToDjango({ email, accessToken });  // Fix: Pass as object directly
                 } else {
                     console.error('AccessToken is missing');
                 }
-                localStorage.setItem('email', email)
+                
                 localStorage.setItem('loginType', 'GOOGLE')
 
                 this.$router.push('/')
             } else {
                 console.log('신규 가입 고객입니다.')
-                this.$router.push('/account/google-register')
+                this.$router.push('/account/register')
             }
         }
     },

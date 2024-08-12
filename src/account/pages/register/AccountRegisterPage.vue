@@ -10,14 +10,23 @@
                     
                     <v-responsive class="mx-auto" min-width="400">
                         <v-form ref="form" v-model="formValid" lazy-validation>
-                            <v-text-field
+                            
+ 
+                            <v-text-field v-if="this.loginType == 'KAKAO'"
                                     v-model="email"
                                     label="Email"
                                     variant="solo"                                    
                                     required
                                     :rules="emailRules"
                                     :disabled="true"/>
-                            
+                            <v-text-field v-else
+                                v-model="email"
+                                label="Email"
+                                variant="solo"                                    
+                                required
+                                :rules="emailRules"
+                                :disabled="true"/>
+              
                             <v-row align="center">
                                 <v-col cols="10">
                                     <v-text-field
@@ -96,9 +105,10 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 const authenticationModule = 'authenticationModule'
+const googleAuthenticationModule = 'googleAuthenticationModule'
 const accountModule = 'accountModule'
 
 export default {
@@ -123,29 +133,44 @@ export default {
                 v => /^\d+$/.test(v) || '출생년도는 숫자여야 합니다!',
                 v => v.length === 4 || '출생년도는 4자리여야 합니다!',
             ],
-            loginType: "KAKAO",
+            loginType: "",
+            googleEmail: ""
         }
     },
     async created () {
         await this.requestUserInfo()
+        this.loginType = localStorage.getItem("loginType")
+        this.email = localStorage.getItem("email")
+        console.log("email:", this.email)
+        console.log("loginType:", this.loginType)
     },
     computed: {
+        ...mapState(accountModule, ["loginType"]),
+        
         isValidForSubmission () {
             return this.formValid && this.isNicknameValid && this.age !== 0;
         },
     },
     methods: {
         ...mapActions(authenticationModule, ['requestUserInfoToDjango', 'requestAddRedisAccessTokenToDjango']),
-        ...mapActions(accountModule, ['requestNicknameDuplicationCheckToDjango', 'requestCreateNewAccountToDjango',]),
+        ...mapActions(googleAuthenticationModule, ['requestGoogleUserInfoToDjango', 'requestAddGoogleRedisAccessTokenToDjango']),
+        ...mapActions(accountModule, ['requestNicknameDuplicationCheckToDjango', 'requestCreateNewAccountToDjango']),
 
         async requestUserInfo () {
             try {
-                const userInfo = await this.requestUserInfoToDjango()
-                this.email = userInfo.kakao_account.email
-            } catch (error) {
+                if (this.loginType == 'KAKAO') {
+                    const userInfo = await this.requestUserInfoToDjango()
+                    this.email = userInfo.kakao_account.email
+                }
+                if (this.loginType == 'GOOGLE') {
+                    const googleUserInfo = await this.requestGoogleUserInfoToDjango()
+                    console.log("google login")
+                }    
+            }  catch (error) {
                 console.error('에러:', error)
                 alert('사용자 정보를 가져오는데 실패하였습니다!')
-            }
+            }   
+         
         },
         async checkNicknameDuplication () {
             console.log('닉네임 중복 검사 누름')
@@ -179,7 +204,16 @@ export default {
                 await this.requestCreateNewAccountToDjango(accountInfo)
                 console.log('전송한 데이터:', accountInfo)
 
-                const accessToken = localStorage.getItem("accessToken");
+                let accessToken;
+                if (this.loginType === 'KAKAO') {
+                    const accessToken = localStorage.getItem("accessToken");
+                } else if (this.loginType === 'GOOGLE') {
+                    const accessToken = localStorage.getItem("googleAccessToken");
+                } else {
+                    console.error('Unknown loginType:', this.loginType);
+                    accessToken = null;
+                }
+                console.log('accessToken', accessToken)
                 const email = accountInfo.email
                 console.log('register submitForm email:', email)
                 await this.requestAddRedisAccessTokenToDjango({ email, accessToken })
