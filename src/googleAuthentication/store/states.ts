@@ -1,9 +1,9 @@
 export interface GoogleAuthenticationState {
-    isAuthenticated: boolean
+    isAuthenticatedGoogle: boolean
 }
 
 const state: GoogleAuthenticationState = {
-    isAuthenticated: false
+    isAuthenticatedGoogle: false
 }
 
 export default state

@@ -5,16 +5,16 @@ import axiosInst from "@/utility/axiosInstance"
 
 export type GoogleAuthenticationActions = {
     requestGoogleOauthRedirectionToDjango(): Promise<void>
-    requestAccessTokenToDjangoRedirection(
+    requestGoogleAccessTokenToDjangoRedirection(
         context: ActionContext<GoogleAuthenticationState, any>,
         payload: { code: string }): Promise<void>
-    requestUserInfoToDjango(
+    requestGoogleUserInfoToDjango(
         context: ActionContext<GoogleAuthenticationState, any>): Promise<any>
-    requestAddRedisAccessTokenToDjango(
+    requestAddGoogleRedisAccessTokenToDjango(
         { commit, state }: ActionContext<GoogleAuthenticationState, any>,
         { email, accessToken }: { email: string, accessToken: string }
     ): Promise<any>
-    requestLogoutToDjango(
+    requestGoogleLogoutToDjango(
         context: ActionContext<GoogleAuthenticationState, any>,
         userToken: string
     ): Promise<void>
@@ -26,11 +26,11 @@ const actions: GoogleAuthenticationActions = {
             window.location.href = res.data.url
         })
     },
-    async requestAccessTokenToDjangoRedirection(
+    async requestGoogleAccessTokenToDjangoRedirection(
         context: ActionContext<GoogleAuthenticationState, any>,
         payload: { code: string }): Promise<void> {
             try {
-                console.log('requestAccessTokenToDjangoRedirection()')
+                console.log('requestGoogleAccessTokenToDjangoRedirection()')
                 const { code } = payload
                 
                 const response = await axiosInst.djangoAxiosInst.post(
@@ -41,7 +41,7 @@ const actions: GoogleAuthenticationActions = {
                 throw error
             }
     },
-    async requestUserInfoToDjango(
+    async requestGoogleUserInfoToDjango(
         context: ActionContext<GoogleAuthenticationState, any>): Promise<any> {
             try {
                 const accessToken = localStorage.getItem("googleAccessToken")
@@ -57,7 +57,7 @@ const actions: GoogleAuthenticationActions = {
                 throw error
             }
     },
-    async requestAddRedisAccessTokenToDjango(
+    async requestAddGoogleRedisAccessTokenToDjango(
         { commit, state }: ActionContext<GoogleAuthenticationState, any>,
         { email, accessToken }: { email: string, accessToken: string }
     ): Promise<any> {
@@ -79,7 +79,7 @@ const actions: GoogleAuthenticationActions = {
             console.error('Error adding google redis access token:', error)
         }
     },
-    async requestLogoutToDjango(
+    async requestGoogleLogoutToDjango(
         context: ActionContext<GoogleAuthenticationState, any>,
         userToken: string
     ): Promise<void> {
@@ -94,7 +94,7 @@ const actions: GoogleAuthenticationActions = {
                 context.commit('REQUEST_IS_GOOGLE_AUTHENTICATED_TO_DJANGO', false)
             }
         } catch (error) {
-            console.error('requestLogoutToDjango() 중 에러 발생:', error)
+            console.error('requestGoogleLogoutToDjango() 중 에러 발생:', error)
             throw error
         }
         localStorage.removeItem("googleUserToken")

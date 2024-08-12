@@ -49,7 +49,7 @@
       </v-list>
     </v-menu>
 
-    <v-menu v-if="isAuthenticatedKakao || isAuthenticated || isAuthenticatedNormal" close-on-content-click>
+    <v-menu v-if="isAuthenticatedKakao || isAuthenticatedGoogle || isAuthenticatedNormal" close-on-content-click>
       <template v-slot:activator="{ props }">
         <v-btn v-bind="props" class="btn-text" style="margin-right: 16px">
           <b>My Page</b>
@@ -66,7 +66,7 @@
       </v-list>
     </v-menu>
 
-    <v-btn v-if="!isAuthenticatedKakao && !isAuthenticated && !isAuthenticatedNormal" text @click="signIn" class="btn-text">
+    <v-btn v-if="!isAuthenticatedKakao && !isAuthenticatedGoogle && !isAuthenticatedNormal" text @click="signIn" class="btn-text">
       <v-icon left>mdi-login</v-icon>
       <span> &nbsp; LOGIN</span>
     </v-btn>
@@ -122,12 +122,12 @@ export default {
   },
   computed: {
     ...mapState(authenticationModule, ["isAuthenticatedKakao"]),
-    ...mapState(googleAuthenticationModule, ["isAuthenticated"]),
+    ...mapState(googleAuthenticationModule, ["isAuthenticatedGoogle"]),
     ...mapState(accountModule, ["loginType", "isAuthenticatedNormal"]),
   },
   methods: {
     ...mapActions(authenticationModule, ["requestKakaoLogoutToDjango"]),
-    ...mapActions(googleAuthenticationModule, ["requestLogoutToDjango"]),
+    ...mapActions(googleAuthenticationModule, ["requestGoogleLogoutToDjango"]),
     goToHome() {
       router.push("/");
     },
@@ -152,8 +152,8 @@ export default {
         this.$store.state.authenticationModule.isAuthenticatedKakao = false
       }
       if (localStorage.getItem('loginType') == 'GOOGLE') {
-        this.requestLogoutToDjango();
-        this.$store.state.googleAuthenticationModule.isAuthenticated = false
+        this.requestGoogleLogoutToDjango();
+        this.$store.state.googleAuthenticationModule.isAuthenticatedGoogle = false
       }
       if (localStorage.getItem('loginType') == 'NORMAL') {
         localStorage.removeItem("normalToken")
@@ -190,7 +190,7 @@ export default {
     const googleUserToken = localStorage.getItem("googleUserToken")
     if (googleUserToken) {
       console.log("You already has a googleUserToken!")
-      this.$store.state.googleAuthenticationModule.isAuthenticated = true
+      this.$store.state.googleAuthenticationModule.isAuthenticatedGoogle = true
     }
     const normalToken = localStorage.getItem("normalToken")
     if (normalToken) {

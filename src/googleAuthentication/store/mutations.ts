@@ -8,7 +8,7 @@ export interface GoogleAuthenticationMutations extends MutationTree<GoogleAuthen
 
 const mutations: MutationTree<GoogleAuthenticationState> = {
     [REQUEST_IS_GOOGLE_AUTHENTICATED_TO_DJANGO](state: GoogleAuthenticationState, settingValue: boolean): void {
-        state.isAuthenticated = settingValue
+        state.isAuthenticatedGoogle = settingValue
     }
 }
 

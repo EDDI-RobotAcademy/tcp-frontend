@@ -93,14 +93,20 @@ export default {
         const store = useStore();
 
         const goToKakaoLogin = async () => {
+            localStorage.setItem("loginType", "KAKAO") 
+
             await store.dispatch(
                 "authenticationModule/requestKakaoOauthRedirectionToDjango"
             );
+            
+
         };
         const goToGoogleLogin = async () => {
+            localStorage.setItem("loginType", "GOOGLE") 
             await store.dispatch(
                 "googleAuthenticationModule/requestGoogleOauthRedirectionToDjango"
             )
+            
         }
 
         return {
@@ -110,9 +116,8 @@ export default {
     },
     computed: {
     ...mapState(authenticationModule, ["isAuthenticatedKakao"]),
-    ...mapState(accountModule, ["isAuthenticatedNormal"]),
-    ...mapState(googleAuthenticationModule, ["isAuthenticated"]),
-    ...mapState(accountModule, ["loginType"]),
+    ...mapState(accountModule, ["isAuthenticatedNormal", "loginType"]),
+    ...mapState(googleAuthenticationModule, ["isAuthenticatedGoogle"]),
     },
     methods: {
         ...mapActions(accountModule, ['requestCheckPasswordToDjango']),
@@ -121,13 +126,7 @@ export default {
         },
 
         goToSignUp() {
-
-            if (this.loginType == "GOOGLE") {
-                router.push("/account/google-register")
-            } else {
-                router.push("/account/register");
-            }
-            
+            router.push("/account/register"); 
         },
 
         async onSubmit() {

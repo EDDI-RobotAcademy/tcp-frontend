@@ -76,11 +76,11 @@ export default defineComponent({
   },
   computed: {
     ...mapState(authenticationModule, ["isAuthenticatedKakao"]),
-    ...mapState(googleAuthenticationModule, ["isAuthenticated"]),
+    ...mapState(googleAuthenticationModule, ["isAuthenticatedGoogle"]),
   },
   methods: {
     ...mapActions(authenticationModule, ["requestKakaoLogoutToDjango"]),
-    ...mapActions(googleAuthenticationModule, ["requestLogoutToDjango"]),
+    ...mapActions(googleAuthenticationModule, ["requestGoogleLogoutToDjango"]),
 
     goToProductList() {
       router.push("/product/list");
