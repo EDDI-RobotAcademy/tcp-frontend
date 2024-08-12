@@ -109,7 +109,8 @@ export default {
         };
     },
     computed: {
-    ...mapState(authenticationModule, ["isAuthenticated"]),
+    ...mapState(authenticationModule, ["isAuthenticatedKakao"]),
+    ...mapState(accountModule, ["isAuthenticatedNormal"]),
     ...mapState(googleAuthenticationModule, ["isAuthenticated"]),
     ...mapState(accountModule, ["loginType"]),
     },
@@ -139,7 +140,7 @@ export default {
                 if (isCollect) {
                 // 비밀번호가 일치하면 로그인 성공
                     this.login_flag = true;
-                    this.$store.state.authenticationModule.isAuthenticated = true;
+                    this.$store.state.accountModule.isAuthenticatedNormal = true;
                     this.$store.state.accountModule.loginType = 'NORMAL';
                     this.$store.state.accountModule.email = this.email
                     console.log('loginType:', this.$store.state.accountModule.loginType)

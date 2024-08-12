@@ -49,7 +49,7 @@
       </v-list>
     </v-menu>
 
-    <v-menu v-if="isAuthenticated || isAuthenticated" close-on-content-click>
+    <v-menu v-if="isAuthenticatedKakao || isAuthenticated || isAuthenticatedNormal" close-on-content-click>
       <template v-slot:activator="{ props }">
         <v-btn v-bind="props" class="btn-text" style="margin-right: 16px">
           <b>My Page</b>
@@ -66,7 +66,7 @@
       </v-list>
     </v-menu>
 
-    <v-btn v-if="!isAuthenticated && !isAuthenticated" text @click="signIn" class="btn-text">
+    <v-btn v-if="!isAuthenticatedKakao && !isAuthenticated && !isAuthenticatedNormal" text @click="signIn" class="btn-text">
       <v-icon left>mdi-login</v-icon>
       <span> &nbsp; LOGIN</span>
     </v-btn>
@@ -120,12 +120,12 @@ export default {
     };
   },
   computed: {
-    ...mapState(authenticationModule, ["isAuthenticated"]),
+    ...mapState(authenticationModule, ["isAuthenticatedKakao"]),
     ...mapState(googleAuthenticationModule, ["isAuthenticated"]),
-    ...mapState(accountModule, ["loginType"]),
+    ...mapState(accountModule, ["loginType", "isAuthenticatedNormal"]),
   },
   methods: {
-    ...mapActions(authenticationModule, ["requestLogoutToDjango"]),
+    ...mapActions(authenticationModule, ["requestKakaoLogoutToDjango"]),
     ...mapActions(googleAuthenticationModule, ["requestLogoutToDjango"]),
     goToHome() {
       router.push("/");
@@ -147,13 +147,13 @@ export default {
     },
     signOut() {
       if (this.$store.state.accountModule.loginType == 'KAKAO') {
-        this.requestLogoutToDjango();
+        this.requestKakaoLogoutToDjango();
       }
       if (this.$store.state.accountModule.loginType == 'GOOGLE') {
         this.requestLogoutToDjango();
       }
       if (this.$store.state.accountModule.loginType == 'NORMAL') {
-        this.$store.state.authenticationModule.isAuthenticated = false;
+        this.$store.state.accountModule.isAuthenticatedNormal = false;
       }
       router.push("/");
     },
@@ -178,7 +178,7 @@ export default {
     const userToken = localStorage.getItem("userToken");
     if (userToken) {
       console.log("You already has a userToken!");
-      this.$store.state.authenticationModule.isAuthenticated = true;
+      this.$store.state.authenticationModule.isAuthenticatedKakao = true;
       this.$store.state.accountModule.loginType = "KAKAO";
     }
     

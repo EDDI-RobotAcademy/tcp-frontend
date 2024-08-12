@@ -40,6 +40,7 @@ export default {
                 } else {
                     console.error('AccessToken is missing');
                 }
+                this.$store.state.accountModule.email = email
                 this.$store.state.accountModule.loginType = 'GOOGLE'
                 console.log('loginType:', this.$store.state.accountModule.loginType)
 

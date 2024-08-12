@@ -10,7 +10,7 @@ export interface AuthenticationMutations extends MutationTree<AuthenticationStat
 
 const mutations: MutationTree<AuthenticationState> = {
     [REQUEST_IS_AUTHENTICATED_TO_DJANGO](state: AuthenticationState, settingValue: boolean): void {
-        state.isAuthenticated = settingValue
+        state.isAuthenticatedKakao = settingValue
     }
 }
 

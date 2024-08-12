@@ -81,7 +81,7 @@ export default {
   }),
   computed: {
     ...mapState("communityModule", ["community"]),
-    ...mapState("authenticationModule", ["isAuthenticated"]),
+    ...mapState("authenticationModule", ["isAuthenticatedKakao"]),
     ...mapState("googleAuthenticationModule", ["isAuthenticated"]),
     ...mapState("accountModule", ["email"]),
     isAuthor() {
