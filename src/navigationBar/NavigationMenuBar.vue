@@ -117,6 +117,7 @@ export default {
           },
         },
       ],
+      isUserAuthenticated: localStorage.getItem('isUserAuthenticated'),
     };
   },
   computed: {
@@ -146,13 +147,18 @@ export default {
       router.push("/account/login");
     },
     signOut() {
-      if (this.$store.state.accountModule.loginType == 'KAKAO') {
+      if (localStorage.getItem('loginType') == 'KAKAO') {
         this.requestKakaoLogoutToDjango();
+        this.$store.state.authenticationModule.isAuthenticatedKakao = false
       }
-      if (this.$store.state.accountModule.loginType == 'GOOGLE') {
+      if (localStorage.getItem('loginType') == 'GOOGLE') {
         this.requestLogoutToDjango();
+        this.$store.state.googleAuthenticationModule.isAuthenticated = false
       }
-      if (this.$store.state.accountModule.loginType == 'NORMAL') {
+      if (localStorage.getItem('loginType') == 'NORMAL') {
+        localStorage.removeItem("normalToken")
+        localStorage.removeItem("email")
+        localStorage.removeItem("loginType")
         this.$store.state.accountModule.isAuthenticatedNormal = false;
       }
       router.push("/");
@@ -178,15 +184,17 @@ export default {
     const userToken = localStorage.getItem("userToken");
     if (userToken) {
       console.log("You already has a userToken!");
-      this.$store.state.authenticationModule.isAuthenticatedKakao = true;
-      this.$store.state.accountModule.loginType = "KAKAO";
+      this.$store.state.authenticationModule.isAuthenticatedKakao = true
     }
     
     const googleUserToken = localStorage.getItem("googleUserToken")
     if (googleUserToken) {
       console.log("You already has a googleUserToken!")
       this.$store.state.googleAuthenticationModule.isAuthenticated = true
-      this.$store.state.accountModule.loginType = "GOOGLE";
+    }
+    const normalToken = localStorage.getItem("normalToken")
+    if (normalToken) {
+      this.$store.state.accountModule.isAuthenticatedNormal = true
     }
   },
 };

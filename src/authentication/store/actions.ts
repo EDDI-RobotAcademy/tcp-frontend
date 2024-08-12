@@ -103,6 +103,8 @@ const actions: AuthenticationActions = {
             throw error
         }
         localStorage.removeItem("userToken")
+        localStorage.removeItem("email")
+        localStorage.removeItem("loginType")
     }
 }
 

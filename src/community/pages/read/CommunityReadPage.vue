@@ -140,7 +140,7 @@ export default {
     await this.incrementCommunityViewCount(this.communityId);
     this.showNextArrow = Number(this.communityId) !== 1;
 
-    const email = this.$store.state.accountModule.email
+    const email = localStorage.getItem("email")
     this.currentUserNickname = await this.requestNicknameToDjango(email);
   },
   watch: {
