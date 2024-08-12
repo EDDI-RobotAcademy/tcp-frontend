@@ -14,7 +14,7 @@ export type AuthenticationActions = {
         context: ActionContext<AuthenticationState, any>,
         { email, accessToken }: { email: string, accessToken: string }
     ): Promise<any>
-    requestLogoutToDjango(
+    requestKakaoLogoutToDjango(
         context: ActionContext<AuthenticationState, any>,
         userToken: string
     ): Promise<void>
@@ -82,7 +82,7 @@ const actions: AuthenticationActions = {
             throw error;
         }
     },
-    async requestLogoutToDjango(
+    async requestKakaoLogoutToDjango(
         context: ActionContext<AuthenticationState, any>,
         userToken: string
     ): Promise<void> {
@@ -99,7 +99,7 @@ const actions: AuthenticationActions = {
                 context.commit('REQUEST_IS_AUTHENTICATED_TO_DJANGO', false)
             }
         } catch (error) {
-            console.error('requestLogoutToDjango() 중 에러 발생:', error)
+            console.error('requestKakaoLogoutToDjango() 중 에러 발생:', error)
             throw error
         }
         localStorage.removeItem("userToken")

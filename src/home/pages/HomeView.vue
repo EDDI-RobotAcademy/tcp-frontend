@@ -75,11 +75,11 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(authenticationModule, ["isAuthenticated"]),
+    ...mapState(authenticationModule, ["isAuthenticatedKakao"]),
     ...mapState(googleAuthenticationModule, ["isAuthenticated"]),
   },
   methods: {
-    ...mapActions(authenticationModule, ["requestLogoutToDjango"]),
+    ...mapActions(authenticationModule, ["requestKakaoLogoutToDjango"]),
     ...mapActions(googleAuthenticationModule, ["requestLogoutToDjango"]),
 
     goToProductList() {

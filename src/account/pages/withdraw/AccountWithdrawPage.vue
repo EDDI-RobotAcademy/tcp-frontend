@@ -57,7 +57,7 @@ export default {
     },
     methods: {
         ...mapActions(accountModule, ['requestWithdrawalToDjango']),
-        ...mapActions(authenticationModule, ["requestLogoutToDjango"]),
+        ...mapActions(authenticationModule, ["requestKakaoLogoutToDjango"]),
         submitWithdrawal() {
             const reasonString = this.selectedReason ? String(this.selectedReason) : '';
             console.log('탈퇴 신청 사유:', reasonString);
@@ -72,7 +72,7 @@ export default {
         closeDialog() {
             this.dialog = false;
             // 로그아웃 처리
-            this.requestLogoutToDjango();
+            this.requestKakaoLogoutToDjango();
             this.$router.push('/');
         }
     }
