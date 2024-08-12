@@ -59,6 +59,7 @@ import aiAvatarSrc from '@/assets/images/fixed/ai-avatar.png'  // AI 아바타 �
 import router from "@/router";
 import { mapActions, mapState } from "vuex";
 const authenticationModule = "authenticationModule";
+const googleAuthenticationModule = "googleAuthenticationModule";
 
 export default defineComponent({
   name: "HomeView",
@@ -75,9 +76,11 @@ export default defineComponent({
   },
   computed: {
     ...mapState(authenticationModule, ["isAuthenticated"]),
+    ...mapState(googleAuthenticationModule, ["isAuthenticated"]),
   },
   methods: {
     ...mapActions(authenticationModule, ["requestLogoutToDjango"]),
+    ...mapActions(googleAuthenticationModule, ["requestLogoutToDjango"]),
 
     goToProductList() {
       router.push("/product/list");

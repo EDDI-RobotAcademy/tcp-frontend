@@ -63,6 +63,7 @@ import { mapActions, mapState } from "vuex";
 
 const communityModule = "communityModule";
 const authenticationModule = "authenticationModule";
+const googleAuthenticationModule = "googleAuthenticationModule";
 const accountModule = 'accountModule'
 
 export default {
@@ -81,6 +82,7 @@ export default {
   computed: {
     ...mapState("communityModule", ["community"]),
     ...mapState("authenticationModule", ["isAuthenticated"]),
+    ...mapState("googleAuthenticationModule", ["isAuthenticated"]),
     ...mapState("accountModule", ["email"]),
     isAuthor() {
       if (!this.community || !this.community.writer) {
