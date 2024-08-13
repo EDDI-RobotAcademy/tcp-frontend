@@ -12,7 +12,7 @@ export type AccountActions = {
     requestWithdrawalToDjango(context: ActionContext<AccountState, unknown>, payload: { reason: string }): Promise<AxiosResponse>
     requestGenderToDjango(context: ActionContext<AccountState, any>, email: string): Promise<Account>
     requestBirthyearToDjango(context: ActionContext<AccountState, any>, email: string): Promise<Account>
-    requestCheckPasswordToDjango(context: ActionContext<AccountState, any>,
+    requestCheckNormalLoginToDjango(context: ActionContext<AccountState, any>,
         payload: { email: string, password: string }): Promise<boolean>
 }
 
@@ -126,12 +126,13 @@ const actions: AccountActions = {
             throw error
         }
     },
-    async requestCheckPasswordToDjango(context: ActionContext<AccountState, any>, 
+    async requestCheckNormalLoginToDjango(context: ActionContext<AccountState, any>, 
         payload: { email: string, password: string }): Promise<boolean> {
             try {
-                const res = await axiosInst.djangoAxiosInst.post('/account/password-check', payload)
-                console.log('isCollect', res.data.isCollect)
-                return res.data.isCollect
+                const res = await axiosInst.djangoAxiosInst.post('/account/check-normal-login', payload)
+                console.log('isEmailCollect', res.data.isEmailCollect)
+                console.log('isPasswordCollect', res.data.isPasswordCollect)
+                return res.data
             } catch (error) {
                 console.error('requestCheckPasswordToDjango() 문제 발생:', error)
                 throw error

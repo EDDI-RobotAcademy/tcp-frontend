@@ -6,12 +6,20 @@
                         LOGIN
                 </div>
 
-                <div v-if="login_flag == false" class="login-error-box">
-                    {{ email }}의 비밀번호가 올바르지 않습니다.
+                <div v-if="login_flag == false && this.isEmailCollect == false" class="login-error-box">
+                    <!-- {{ email }}의 비밀번호가 올바르지 않습니다. -->
+                    이메일이 올바르지 않습니다.
                     <br />
-                    비밀번호를 재설정하거나,
+                    올바른 이메일을 입력하거나,
                     <br />
-                    카카오 간편로그인을  시도해 보세요.
+                    다른 간편로그인을  시도해 보세요.
+                </div>
+                <div v-if="login_flag == false && this.isEmailCollect == true && this.isPasswordCollect == false" class="login-error-box">
+                    비밀번호가 올바르지 않습니다.
+                    <br />
+                    올바른 비밀번호를 입력하거나,
+                    <br />
+                    다른 간편로그인을  시도해 보세요.
                 </div>
 
                 <v-responsive class="mx-auto" min-width="300">
@@ -87,6 +95,8 @@ export default {
         visible: false,
         loading: false,
         login_flag: true,
+        isEmailCollect: false,
+        isPasswordCollect: false,
     }),
 
     setup() {
@@ -120,7 +130,7 @@ export default {
     ...mapState(googleAuthenticationModule, ["isAuthenticatedGoogle"]),
     },
     methods: {
-        ...mapActions(accountModule, ['requestCheckPasswordToDjango']),
+        ...mapActions(accountModule, ['requestCheckNormalLoginToDjango']),
         goToHome() {
             router.push("/");
         },
@@ -135,9 +145,13 @@ export default {
             this.loading = true;
 
             try {
-                const isCollect = await this.checkPassword();
-                if (isCollect) {
-                // 비밀번호가 일치하면 로그인 성공
+                const response = await this.checkPassword();
+                // console.log('response', response)
+                this.isEmailCollect = response.isEmailCollect
+                this.isPasswordCollect = response.isPasswordCollect
+
+                if (this.isEmailCollect && this.isPasswordCollect) {
+                // 이메일과 비밀번호가 모두 일치하면 로그인 성공
                     this.login_flag = true;
                     localStorage.setItem('normalToken', true)
                     localStorage.setItem('email', this.email)
@@ -146,7 +160,7 @@ export default {
                     this.goToHome();
 
                 } else {
-                // 비밀번호가 일치하지 않으면 로그인 실패
+                // 이메일 또는 비밀번호가 일치하지 않으면 로그인 실패
                     this.login_flag = false;
                 }
             } catch (error) {
@@ -176,13 +190,13 @@ export default {
         },
         async checkPassword() {
             try {
-                console.log("비밀번호 확인")
+                console.log("이메일, 비밀번호 확인")
                 const payload = {
                     email: this.email,
                     password: this.password
                 }
-                const isCollect = await this.requestCheckPasswordToDjango(payload)
-                return isCollect;
+                const response = await this.requestCheckNormalLoginToDjango(payload)
+                return response
             } catch (error) {
                 console.error("비밀번호 확인 중 에러 발생: ", error)
             }
