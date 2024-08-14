@@ -13,14 +13,14 @@
                             
  
                             <v-text-field v-if="this.loginType == 'KAKAO'"
-                                    v-model="email"
+                                    v-model="kakaoEmail"
                                     label="Email"
                                     variant="solo"                                    
                                     required
                                     :rules="emailRules"
                                     :disabled="true"/>
                             <v-text-field v-else
-                                v-model="email"
+                                v-model="googleEmail"
                                 label="Email"
                                 variant="solo"                                    
                                 required
@@ -116,6 +116,7 @@ export default {
         return {
             formValid: false,
             email: '',
+            kakaoEmail: '',
             password: '',
             nickname: '',
             emailRules: [
@@ -140,8 +141,8 @@ export default {
     async created () {
         await this.requestUserInfo()
         this.loginType = localStorage.getItem("loginType")
-        this.email = localStorage.getItem("email")
-        console.log("email:", this.email)
+        // this.email = localStorage.getItem("email")
+        // console.log("emailddd:", this.email)
         console.log("loginType:", this.loginType)
     },
     computed: {
@@ -158,13 +159,13 @@ export default {
 
         async requestUserInfo () {
             try {
-                if (this.loginType == 'KAKAO') {
-                    const userInfo = await this.requestUserInfoToDjango()
-                    this.email = userInfo.kakao_account.email
+                if (localStorage.getItem('loginType') == 'KAKAO') {
+                    const kakaoUserInfo = await this.requestUserInfoToDjango()
+                    this.kakaoEmail = kakaoUserInfo.kakao_account.email
                 }
-                if (this.loginType == 'GOOGLE') {
+                if (localStorage.getItem('loginType') == 'GOOGLE') {
                     const googleUserInfo = await this.requestGoogleUserInfoToDjango()
-                    console.log("google login")
+                    this.googleEmail = googleUserInfo.email
                 }    
             }  catch (error) {
                 console.error('에러:', error)
@@ -193,6 +194,12 @@ export default {
         async submitForm () {
             console.log('회원가입 하기 누름')
             if (this.$refs.form.validate()) {
+                if (this.loginType == 'KAKAO') {
+                    this.email = this.kakaoEmail
+                }
+                else {
+                    this.email = this.googleEmail
+                }
                 const accountInfo = {
                     email: this.email,
                     password: this.password,
@@ -207,16 +214,21 @@ export default {
                 let accessToken;
                 if (this.loginType === 'KAKAO') {
                     const accessToken = localStorage.getItem("accessToken");
+                    console.log('accessToken', accessToken)
+                    const registerEmail = accountInfo.email
+                    console.log('register submitForm email:', registerEmail)
+                    await this.requestAddRedisAccessTokenToDjango({ email: registerEmail, accessToken: accessToken })
                 } else if (this.loginType === 'GOOGLE') {
                     const accessToken = localStorage.getItem("googleAccessToken");
+                    console.log('accessToken', accessToken)
+                    const registerEmail = accountInfo.email
+                    console.log('register submitForm email:', registerEmail)
+                    await this.requestAddGoogleRedisAccessTokenToDjango({ email: registerEmail, accessToken: accessToken })
                 } else {
                     console.error('Unknown loginType:', this.loginType);
                     accessToken = null;
                 }
-                console.log('accessToken', accessToken)
-                const email = accountInfo.email
-                console.log('register submitForm email:', email)
-                await this.requestAddRedisAccessTokenToDjango({ email, accessToken })
+    
                 this.$router.push('/')
             }
         }
