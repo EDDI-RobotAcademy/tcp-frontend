@@ -254,7 +254,7 @@ export default {
         await this.requestCreateNewAccountToDjango(accountInfo);
         console.log("전송한 데이터:", accountInfo);
         this.$store.state.accountModule.loginType = 'NORMAL';
-        this.$router.push("/");
+        this.$router.push("/account/login");
       }
     },
   },
