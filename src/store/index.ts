@@ -4,6 +4,7 @@ import accountModule from '@/account/store/accountModule'
 import authenticationModule from '@/authentication/store/authenticationModule'
 import communityModule from '@/community/store/communityModule'
 import googleAuthenticationModule from '@/googleAuthentication/store/googleAuthenticationModule'
+import userInputModule from '@/home/store/userInputModule'
 
 export default createStore({
   state: {
@@ -19,5 +20,6 @@ export default createStore({
     authenticationModule,
     communityModule,
     googleAuthenticationModule,
+    userInputModule,
   }
 })
