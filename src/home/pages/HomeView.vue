@@ -93,7 +93,7 @@ export default defineComponent({
     async sendMessage() {
       if (this.userInput.trim()) {
         this.chatHistory.push({ type: 'user', content: this.userInput });
-        this.aiOutput = await this.requestAnswerToFastAPI({ "userInput": this.userInput })
+        this.aiOutput = await this.requestAnswerToFastAPI({ "data": this.userInput })
         this.chatHistory.push({ type: 'ai', content: this.aiOutput });
         this.userInput = '';
         this.aiOutput = ''

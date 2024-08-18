@@ -6,21 +6,22 @@ import { UserInputState } from "./states"
 export type UserInputActions = {
     requestAnswerToFastAPI(
         context: ActionContext<UserInputState, any>,
-        payload: { userInput: string }): Promise<string>
+        payload: { data: string }): Promise<string>
 }
 
 const actions: UserInputActions = {
     async requestAnswerToFastAPI(
         context: ActionContext<UserInputState, any>,
-        payload: { userInput: string }): Promise<string> {
+        payload: { data: string }): Promise<string> {
 
         try {
             console.log('requestAnswerToFastAPI()')
-            const { userInput } = payload
-            console.log("userInput:", userInput)
+            const { data } = payload
+            console.log("userInput:", data)
+            const command = 6
 
             const response = await axiosInst.fastapiAxiosInst.post(
-                '/openai-api-test', { userInput })
+                '/request-ai-command', { command, "data":[data] })
             return response.data
         } catch (error) {
             console.log('requestAnswerToFastAPI() 중 문제 발생:', error)
