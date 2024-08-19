@@ -218,12 +218,14 @@ export default {
                     const registerEmail = accountInfo.email
                     console.log('register submitForm email:', registerEmail)
                     await this.requestAddRedisAccessTokenToDjango({ email: registerEmail, accessToken: accessToken })
+                    localStorage.setItem('email', registerEmail)
                 } else if (this.loginType === 'GOOGLE') {
                     const accessToken = localStorage.getItem("googleAccessToken");
                     console.log('accessToken', accessToken)
                     const registerEmail = accountInfo.email
                     console.log('register submitForm email:', registerEmail)
                     await this.requestAddGoogleRedisAccessTokenToDjango({ email: registerEmail, accessToken: accessToken })
+                    localStorage.setItem('email', registerEmail)
                 } else {
                     console.error('Unknown loginType:', this.loginType);
                     accessToken = null;
