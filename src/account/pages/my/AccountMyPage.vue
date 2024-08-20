@@ -1,46 +1,50 @@
 <template>
-  <div class="id-card-container">
+  <v-container class="container">
+    <div class="id-card-container">
     <div class="lanyard"></div>
-    <v-card class="id-card mx-auto" max-width="300">
-      <div class="company-logo" >TCP 1-Team</div>
-      <v-avatar size="120" class="mt-8 avatar-margin" style="margin-top: 20px;">
-        <v-img :src="imageSrc"></v-img>
-      </v-avatar>
-      <v-card-text>
-        <h2 class="text-h5 mb-2">{{ nickname }}</h2>
-        <p class="subtitle-1">{{ email }}</p>
-        <v-divider class="my-3"></v-divider>
-        <v-row dense>
-          <v-col cols="6">
-            <v-icon>{{
-              gender === "MALE" ? "mdi-gender-male" : "mdi-gender-female"
-            }}</v-icon>
-            <span class="ml-1">{{ gender === "MALE" ? "남성" : "여성" }}</span>
-          </v-col>
-          <v-col cols="6">
-            <v-icon>mdi-calendar</v-icon>
-            <span class="ml-1">{{ birthyear }}</span>
-          </v-col>
-        </v-row>
-      </v-card-text>
-    </v-card>
-  </div>
-  <div class="floating-menu-container" @mouseover="showMenu" @mouseleave="hideMenu">
-    <v-btn class="floating-button">
-      <v-icon>{{ menuOpen ? "mdi-close" : "mdi-menu" }}</v-icon>
-    </v-btn>
-    <div v-if="menuOpen" class="floating-menu">
-      <v-btn
-        class="menu-item"
-        @click="$router.push({ name: 'CommunityModifyPage', params: { communityId } })"
-      >
-        수정
-      </v-btn>
-      <v-btn class="menu-item" @click="$router.push({ name: 'AccountWithdrawPage' })">
-        회원탈퇴
-      </v-btn>
+      <v-card class="id-card mx-auto" min-width="500" style="background-color: rgba(0, 255, 55, 0.1);  
+  color: white;
+  border: 2px solid green;">
+        <div class="company-logo" style="color: white;">Text Chat Programmers</div>
+        <v-avatar size="120" class="mt-8 avatar-margin" style="margin-top: 20px;">
+          <v-img :src="imageSrc"></v-img>
+        </v-avatar>
+        <v-card-text>
+          <h2 class="text-h5 mb-2">{{ nickname }}</h2>
+          <p class="subtitle-1">{{ email }}</p>
+          <v-divider class="my-3"></v-divider>
+          <v-row dense>
+            <v-col cols="6">
+              <v-icon>{{
+                gender === "MALE" ? "mdi-gender-male" : "mdi-gender-female"
+              }}</v-icon>
+              <span class="ml-1">{{ gender === "MALE" ? "남성" : "여성" }}</span>
+            </v-col>
+            <v-col cols="6">
+              <v-icon>mdi-calendar</v-icon>
+              <span class="ml-1">{{ birthyear }}</span>
+            </v-col>
+          </v-row>
+        </v-card-text>
+      </v-card>
     </div>
-  </div>
+    <div class="floating-menu-container" @mouseover="showMenu" @mouseleave="hideMenu">
+      <v-btn class="floating-button">
+        <v-icon>{{ menuOpen ? "mdi-close" : "mdi-menu" }}</v-icon>
+      </v-btn>
+      <div v-if="menuOpen" class="floating-menu">
+        <v-btn
+          class="menu-item"
+          @click="$router.push({ name: 'CommunityModifyPage', params: { communityId } })"
+        >
+          수정
+        </v-btn>
+        <v-btn class="menu-item" @click="$router.push({ name: 'AccountWithdrawPage' })">
+          회원탈퇴
+        </v-btn>
+      </div>
+    </div>
+  </v-container>  
 </template>
 
 <script>
@@ -51,7 +55,7 @@ const accountModule = "accountModule";
 export default {
   data() {
     return {
-      imageSrc: require("@/assets/images/fixed/profile_img.png"),
+      imageSrc: require("@/assets/images/fixed/user-avatar.png"),
       email: "",
       nickname: "",
       gender: "",
@@ -66,8 +70,7 @@ export default {
     try {
       const email = localStorage.getItem("email");
       console.log('email:', email)
-      const nickname = await this.requestNicknameToDjango(email);
-      // const email = await this.requestEmailToDjango();
+      const nickname = await this.requestNicknameToDjango(email);      
       const gender = await this.requestGenderToDjango(email);
       const birthyear = await this.requestBirthyearToDjango(email);
       this.email = email;
@@ -99,12 +102,27 @@ export default {
 </script>
 
 <style scoped>
+.container {
+    margin: 0;
+    width: 100%;
+    max-width: 100vw;
+    height: 100%;
+    display: flex;                  /* Flexbox 사용하여 가운데 정렬 */
+    justify-content: center;        /* 수평 가운데 정렬 */    
+    padding: 0;
+    background: url("@/assets/images/fixed/mypage_bg.jpeg") no-repeat center center; /* 배경 이미지 설정 */
+    background-size: 50%;
+    background-color: #000;                                                     /* 배경 이미지 크기 조정 */
+    background-position: center 400px; /* 수직으로 20px 아래로 이동 */
+}
+
 .id-card-container {
   position: relative;
   padding-top: 50px;
   display: flex;
   justify-content: center;
-  margin-top: 170px;
+  margin-top: 200px;
+  max-height: 35%;  
 }
 
 .id-card:hover {
@@ -120,7 +138,7 @@ export default {
   transform: translateX(-50%);
   width: 15px;
   height: 170px;
-  background-color: #333;
+  background-color: rgba(0, 255, 55, 0.1);
   border-radius: 5px 5px 0 0;
 }
 
@@ -132,7 +150,7 @@ export default {
   transform: translateX(-50%);
   width: 30px;
   height: 10px;
-  background-color: #555;
+  background-color: darkgreen;
   border-radius: 5px 5px 0 0;
 }
 
