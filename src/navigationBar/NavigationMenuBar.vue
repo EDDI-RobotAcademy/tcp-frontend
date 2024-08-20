@@ -1,10 +1,7 @@
 <template>
-  <v-app-bar color="black" app dark height="64">
+  <v-app-bar color="rgba(0, 0, 0, 0.85)" app dark height="64">
     <v-toolbar-title class="navbar-title">
-      <v-btn text @click="goToHome" class="navbar-title-btn">
-        <span style="color: red;"> ● &nbsp;</span>
-        <span style="color: yellow;"> ● &nbsp;</span>
-        <span style="color: green;"> ● &nbsp;</span>
+      <v-btn text @click="goToHome" class="navbar-title-btn">        
         <v-icon class="home-icon"> mdi-console </v-icon>
         <span> &nbsp; Text Chat Prompt</span>
       </v-btn>
@@ -19,9 +16,9 @@
       <span>COMMUNITY Board</span>
     </v-btn>
 
-    <v-btn text @click="goToReviewList" class="btn-text">
+    <!-- <v-btn text @click="goToReviewList" class="btn-text">
       <span>TCP REVIEW</span>
-    </v-btn>
+    </v-btn> -->
 
     <!-- <v-btn v-if="isAuthenticated" text @click="goToCart" class="btn-text">
       <span>Cart</span>
@@ -35,7 +32,7 @@
       <template v-slot:activator="{ props }">
         <v-btn v-bind="props" class="btn-text">
           <!-- <b>Report</b> -->
-          <b>My Repository</b>
+          <b>My Document</b>
         </v-btn>
       </template>
       <v-list>
@@ -232,7 +229,7 @@ export default {
 }
 
 .v-btn:hover {
-  background-color: rgba(0, 255, 55, 0.233);
+  background-color: rgba(0, 255, 55, 0.25);
 }
 
 .v-btn:hover .btn-text {
@@ -240,7 +237,7 @@ export default {
 }
 
 .v-btn:focus {
-  background-color: rgba(0, 255, 55, 0.233);; /* 클릭해서 선택되었을시 표시 */
+  background-color: rgba(0, 255, 55, 0.25); /* 클릭해서 선택되었을시 표시 */
   color: white;
 }
 
@@ -251,11 +248,16 @@ export default {
 .v-menu > .v-overlay__content > .v-card,
 .v-menu > .v-overlay__content > .v-sheet,
 .v-menu > .v-overlay__content > .v-list {
-  background-color: #0000008a;
-  color: white;
+  background-color: rgba(0, 255, 55, 0.1);  
+  color: darkgreen;
+  border: 2px solid green;
 }
 
 .v-list-item:hover {
-  background-color: rgba(0, 255, 55, 0.233);;
+  background-color: rgba(0, 255, 55, 0.25);
 }
+
+
+
+
 </style>
