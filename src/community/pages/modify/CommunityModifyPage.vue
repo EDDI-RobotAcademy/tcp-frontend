@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container style="margin: 5% 50px 0px 50px;">
   <v-icon class="left-arrow" @click="$router.push({ name: 'CommunityReadPage', params: { communityId } })">mdi-chevron-left</v-icon>
     <v-card class="main" v-if="community" outlined>
       <v-text-field class="headline" v-model="title"></v-text-field>

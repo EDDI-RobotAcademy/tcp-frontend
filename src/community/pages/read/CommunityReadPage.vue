@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container style="margin: 15% 50px 0px 50px;">
     <!-- <v-icon class="left-arrow" @click="navigateToPrevious">mdi-chevron-left</v-icon> -->
     <v-card class="main" v-if="community" outlined>
       <v-card-title class="headline">{{ community.title }}</v-card-title>
@@ -158,7 +158,7 @@ export default {
   text-align: center;
   margin-top: 20px;
   font-weight: bold;
-    font-size: 25px;
+  font-size: 25px;
 }
 
 .v-card {
@@ -167,7 +167,7 @@ export default {
 }
 
 .main {
-  margin-top: 90px;
+  margin-top: 5%;
 }
 
 .main:hover {
