@@ -1,6 +1,6 @@
 <template>
-  <v-container>
-    <h2 class="mb-4 text-center" style="margin-top: 28px;">COMMUNITY</h2>
+  <v-container style="margin: 5% 50px 0px 50px;">
+    <h2 class="mb-4 text-center">COMMUNITY</h2>
     <v-card class="mb-4" elevation="2">
       <v-card-text>
         <v-row no-gutters>

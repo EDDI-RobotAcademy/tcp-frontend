@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container style="margin: 5% 50px 0px 50px;">
         <v-row>
             <v-col cols="12">
                 <v-text-field v-model="title" label="제목" :rules="[v => v.length <= 30 || '제목은 최대 30글자까지 가능합니다.']" maxlength="30"/>
