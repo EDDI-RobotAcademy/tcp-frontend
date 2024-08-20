@@ -237,45 +237,69 @@ export default {
 </script>
 
 
-
 <style scoped>
+/* 전체 화면을 가득 채우는 컨테이너 */
+.register-container {
+    margin: 0;
+    width: 100%;
+    max-width: 100vw;
+    height: 100%;
+    display: flex;                  /* Flexbox 사용하여 가운데 정렬 */
+    justify-content: center;        /* 수평 가운데 정렬 */
+    align-items: center;            /* 수직 가운데 정렬 */
+    padding: 0;
+    background: url("@/assets/images/fixed/login4.png") no-repeat center center; /* 배경 이미지 설정 */
+    background-size: cover;                                                     /* 배경 이미지 크기 조정 */
+}
+
+/* 카드 스타일링 */
 .v-card {
     position: relative;
     z-index: 1;
-    background-color: rgb(0, 0, 0);
-    color: white;
-    min-width: 400px;
-    min-height: 500px;
-    padding: 20px;
-    border-top-width: 50px;    
-    border-radius: 20px;
+    background-color: rgba(0, 0, 0, 0.9); /* 반투명한 검은색 배경 */
+    color: white; /* 텍스트 색상: 흰색 */
+    min-width: 400px; /* 카드의 최소 너비 */
+    min-height: 500px; /* 카드의 최소 높이 */
+    padding: 20px; /* 카드 내부의 패딩 */
+    border-radius: 20px; /* 카드의 모서리 둥글게 */
 }
+
+/* 버튼 스타일링 */
 .v-btn {
     position: relative;
-    padding: 8px 16px;
-    margin-right: 10px;
-    background-color: rgb(200, 255, 0);
+    padding: 8px 16px; /* 버튼 내부 패딩 */
+    margin-right: 10px; /* 오른쪽 여백 */
+    background-color: rgba(0, 255, 55, 0.75); /* 버튼 배경색 */
 }
 
+/* 성별 라디오 그룹의 레이블 스타일링 */
 :deep(.v-radio-group > .v-input__control > .v-label) {
-    color: #fff !important;
-    margin-inline-start: 0px !important;
-    margin-bottom: 12px !important;
-    opacity: 1 !important;
+    color: #fff !important; /* 레이블 색상: 흰색 */
+    margin-inline-start: 0px !important; /* 레이블 시작 마진 제거 */
+    margin-bottom: 12px !important; /* 레이블 하단 여백 */
+    opacity: 1 !important; /* 투명도: 100% */
 }
 
+/* 성별 라디오 그룹의 선택 컨트롤 스타일링 */
 :deep(
         .v-radio-group
             > .v-input__control
             > .v-label
             + .v-selection-control-group
     ) {
-    padding-inline-start: 0px !important;
-    margin-top: 0px !important;
+    padding-inline-start: 0px !important; /* 패딩 시작 부분 제거 */
+    margin-top: 0px !important; /* 상단 여백 제거 */
 }
 
+/* 오류 메시지 스타일링 */
 :deep(.v-messages__message) {
-    color: rgb(200, 255, 0)!important; 
-    font-size: 18px;
+    color: rgba(0, 255, 55, 0.75)!important; /* 메시지 색상 */
+    font-size: 15px; /* 메시지 폰트 크기 */
 }
+
+/* 텍스트 필드 에러 상태의 레이블 색상을 초록색으로 변경 */
+:deep(.v-field--error:not(.v-field--disabled) .v-label.v-field-label) {
+    color: rgba(0, 255, 55, 0.75) !important; /* 에러 상태의 레이블 색상을 초록색으로 변경 */
+}
+
 </style>
