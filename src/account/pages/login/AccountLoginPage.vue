@@ -1,8 +1,12 @@
 <template>
     <v-container class="container">
         <div class="login-wrapper">
-            <div>
-                <div :style="{ marginBottom: login_flag ? '20px' : '10px', textAlign: 'center'}">
+            <div>                
+                <span style="color: red;"> ● &nbsp;</span>
+                <span style="color: yellow;"> ● &nbsp;</span>
+                <span style="color: green;"> ● &nbsp;</span>
+
+                <div :style="{ marginBottom: login_flag ? '20px' : '10px', textAlign: 'center', fontSize: '25px'}">
                         LOGIN
                 </div>
 
@@ -29,7 +33,7 @@
                             variant="solo"
                             v-model="email"
                             color="#fff"
-                            bg-color="rgba(0, 0, 0, 0.6)"
+                            bg-color="rgba(0, 0, 0, 0.5)"
                             clearable
                             :rules="[emailRequired]"
                         />
@@ -39,7 +43,7 @@
                             variant="solo"
                             v-model="password"
                             color="#fff"
-                            bg-color="rgba(0, 0, 0, 0.6)"
+                            bg-color="rgba(0, 0, 0, 0.5)"
                             :rules="[passwordRequired]"
                             :append-inner-icon="
                                 visible ? 'mdi-eye' : 'mdi-eye-off'
@@ -55,16 +59,22 @@
                             type="submit"
                             variant="elevated"
                             block
-                            style="font-size: 13px;"
+                            style="font-size: 13px; margin-top:20px;"
                         >
                             로그인
                         </v-btn>
                     </v-form>
                 </v-responsive>
-                <v-btn color="purple darken-2" class="black--text mt-2" block @click="goToNomalAccountRegisterPage" style="font-size: 13px;">
-                    <router-link :to="{ name: 'NomalAccountRegisterPage' }" class="custom-link">
-                            <span class="option-text"> 회원가입 </span>
-                    </router-link>
+                <!-- 회원가입 버튼 -->
+                <v-btn
+                    width="100%"
+                    color="purple darken-2"
+                    class="black--text mt-2"
+                    block
+                    style="font-size: 13px;"
+                    :to="{ name: 'NomalAccountRegisterPage' }"
+                >
+                    회원가입
                 </v-btn>
 
                 <v-divider :thickness="3" style="margin-top: 20px; margin-bottom: 20px;"></v-divider>
@@ -213,107 +223,35 @@ export default {
     width: 100%;
     max-width: 100vw;
     height: 100%;
-    padding: 120px 40px 20px 40px;
-    background: linear-gradient(
-            rgba(255, 255, 255, 0),
-            rgba(255, 255, 255, 0)
-        ),
-        url("@/assets/images/fixed/login1.jpg");
-    background-size: cover; /* 변경된 부분 */
-    background-position: center; /* 이미지가 컨테이너의 가운데로 위치하도록 설정 */
-    background-repeat: no-repeat; /* 이미지가 반복되지 않도록 설정 */
+    display: flex;                  /* Flexbox 사용하여 가운데 정렬 */
+    justify-content: center;        /* 수평 가운데 정렬 */
+    align-items: center;            /* 수직 가운데 정렬 */
+    padding: 0;
+    background: url("@/assets/images/fixed/login_bg.png") no-repeat center center; /* 배경 이미지 설정 */
+    background-size: cover;                                                     /* 배경 이미지 크기 조정 */
 }
 
-
-:deep(.v-img__img--contain) {
-    object-fit: fill !important;
-}
-
+/* 로그인 박스 설정 */
 .login-wrapper {
     position: relative;
     z-index: 1;    
     color: white;
-    min-width: 100px;
-    min-height: 500px;
+    width: 400px;
     padding: 20px;
-    padding-top: 10%;
-    border-top-width: 50px;    
-    border-radius: 20px;
+    background-color: rgba(0, 0, 0, 0.75); /* 반투명 배경 */
+    border-radius: 20px; /* 모서리 둥글게 */
 }
 
-.login-wrapper > div {    
-    background-color: rgba(0, 0, 0, 0.6);
-    position: relative;
-    z-index: 1;    
-    color: white;
-    width:400px;
-    min-height: 500px;
-    padding: 20px;
-    border-top-width: 150px;    
-    border-radius: 20px;
-    margin: auto;
-}
-.custom-link {
-  color: white;
-  text-decoration: none;
-}
-.login-wrapper > div > div:first-child {
-    color: #fff;
-    font-size: 25px;
-    font-weight: bold;
-    padding: 5px;
-    margin: auto;
-}
-.login-wrapper > div > .login-error-box {
-    background-color: rgba(39, 54, 108, 1);
+/* 에러 메시지 박스 설정 */
+.login-error-box {
+    background-color: rgba(255, 0, 0, 0.85);
     padding: 16px;
     margin-bottom: 16px;
     border-radius: 10px;
     color: #fff;
 }
-.login-wrapper > div > .v-divider {
-    margin-top: 8px;
-    margin-bottom: 8px;
-}
-.login-wrapper > div > div:nth-last-child(3) {
-    font-size: 12px;
-    margin-bottom: 8px;
-}
 
-.login-wrapper > div > div:nth-last-child(2) {
-    display: flex;
-    justify-content: space-around;
-}
-
-.login-wrapper > div > div > div {
-    width: 38px;
-    height: 38px;
-    cursor: pointer;
-}
-
-.login-wrapper > div > div:last-child {
-    display: flex;
-    margin-top: 16px;
-}
-
-.login-wrapper > div > div:last-child > p:first-child {
-    color: rgba(255, 255, 255, 0.5);
-    margin-right: 6px;
-}
-
-.login-wrapper > div > div:last-child > p:last-child {
-    color: rgba(255, 255, 255, 0.7);
-}
-
-.login-wrapper > div > div:last-child > p:last-child:hover {
-    cursor: pointer;
-    text-decoration: underline;
-}
-
-.v-form .v-text-field {
-    margin-bottom: 8px;
-}
-
+/* Kakao 로그인 버튼 설정 */
 .kakao-login-btn {
     background-image: url("@/assets/images/fixed/kakao_login.png");
     background-size: contain;
@@ -324,6 +262,7 @@ export default {
     justify-content: center;
 }
 
+/* Google 로그인 버튼 설정 */
 .google-login-btn {
     background-image: url("@/assets/images/fixed/google_login.png");
     background-size: contain;
@@ -334,19 +273,30 @@ export default {
     justify-content: center;
 }
 
+/* 로그인 폼의 텍스트 필드 라벨 색상 설정 */
 :deep(.v-label.v-field-label) {
     color: rgba(255, 255, 255, 0.8) !important;
 }
 
+/* 로그인 폼의 텍스트 필드 입력값 색상 설정 */
 :deep(.v-text-field input) {
     color: #fff;
 }
 
-:deep(.mdi-eye::before) {
+/* 눈 아이콘 색상 설정 */
+:deep(.mdi-eye::before), :deep(.mdi-eye-off::before) {
     color: rgba(255, 255, 255, 0.8) !important;
 }
 
-:deep(.mdi-eye-off::before) {
-    color: rgba(255, 255, 255, 0.8) !important;
+/* 오류 메시지 스타일링 */
+:deep(.v-messages__message) {
+    color: rgba(0, 255, 55, 0.75)!important; /* 메시지 색상 */
+    font-size: 15px; /* 메시지 폰트 크기 */
 }
+
+/* 텍스트 필드 에러 상태의 레이블 색상을 초록색으로 변경 */
+:deep(.v-field--error:not(.v-field--disabled) .v-label.v-field-label) {
+    color: rgba(0, 255, 55, 0.75) !important; /* 에러 상태의 레이블 색상을 초록색으로 변경 */
+}
+
 </style>
