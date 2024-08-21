@@ -6,12 +6,12 @@
 
     <div class="content-wrapper">
       <div class="text-and-buttons" style="margin-top: 5vh;">
-        <div class="text-container">          
+        <div class="text-container">
           <p class="subtitle">"Text Chat Prompt for TCP SINCE 2024"</p>
           <div style="margin-bottom: 10px"></div>
           <p class="description">
-            TCP는 양질의 논문 컨텐츠로<br> 
-            AI 연구와 학습의 즐거움을<br> 
+            TCP는 양질의 논문 컨텐츠로<br>
+            AI 연구와 학습의 즐거움을<br>
             보다 많은 사람들과 공유할 수 있는 그 날까지
           </p>
         </div>
@@ -19,7 +19,7 @@
         <div class="buttons">
           <button class="goToCommunity-button" @click="goToCommunityList">
             <img :src="require('@/assets/images/fixed/icon-A.png')" class="button-icon">
-            
+
             AI 논문 커뮤니티로<br>이동하기
           </button>
           <button class="goToProduct-button" @click="goToProductList">
@@ -63,8 +63,9 @@ const userInputModule = 'userInputModule'
 export default defineComponent({
   name: "HomeView",
   data() {
-    return {      
+    return {
       userInput: '',
+      userInputMessage: '',
       aiOutput: '',
       chatHistory: [
         { type: 'ai', content: '안녕하세요! 어떤 도움이 필요하신가요?' }
@@ -92,10 +93,11 @@ export default defineComponent({
     async sendMessage() {
       if (this.userInput.trim()) {
         this.chatHistory.push({ type: 'user', content: this.userInput });
-        this.aiOutput = await this.requestAnswerToFastAPI({ "data": this.userInput })
-        this.aiOutput = await this.requestAnswerToFastAPI({ "userInput": this.userInput })
-        this.chatHistory.push({ type: 'ai', content: this.aiOutput });
+        this.userInputMessage = this.userInput
         this.userInput = '';
+        this.aiOutput = await this.requestAnswerToFastAPI({ "data": this.userInputMessage })
+        this.chatHistory.push({ type: 'ai', content: this.aiOutput });
+        
         this.aiOutput = ''
       }
     }
@@ -110,19 +112,27 @@ export default defineComponent({
   width: 100%;
   max-width: 100vw;
   height: 100%;
-  display: flex;                  /* Flexbox 사용하여 가운데 정렬 */
-  flex-direction: column;         /* 세로 방향 정렬 */
-  align-items: center;            /* 수직 가운데 정렬 */
+  display: flex;
+  /* Flexbox 사용하여 가운데 정렬 */
+  flex-direction: column;
+  /* 세로 방향 정렬 */
+  align-items: center;
+  /* 수직 가운데 정렬 */
   padding: 0;
-  background: url("@/assets/images/homeImages/home_bg.jpg") no-repeat center center; /* 배경 이미지 설정 */
-  background-size: cover;                                                            /* 배경 이미지 크기 설정 */
+  background: url("@/assets/images/homeImages/home_bg.jpg") no-repeat center center;
+  /* 배경 이미지 설정 */
+  background-size: cover;
+  /* 배경 이미지 크기 설정 */
 }
 
 /* 텍스트와 버튼을 함께 배치하기 위한 래퍼 */
 .text-and-buttons {
-  display: flex;                  /* Flexbox 사용하여 행으로 정렬 */
-  align-items: center;            /* 수직 가운데 정렬 */
-  justify-content: space-between; /* 텍스트와 버튼 사이 여백 */
+  display: flex;
+  /* Flexbox 사용하여 행으로 정렬 */
+  align-items: center;
+  /* 수직 가운데 정렬 */
+  justify-content: space-between;
+  /* 텍스트와 버튼 사이 여백 */
   width: 100%;
   max-width: 1200px;
   margin-bottom: 10px;
@@ -146,9 +156,11 @@ export default defineComponent({
   margin: 33px auto;
   border-radius: 20px;
   overflow: hidden;
-  background-color: rgba(0, 0, 0, 0.3); 
-  backdrop-filter: blur(1px);                                /* 배경 흐림 효과 */
-  box-shadow: 0 0 15px 5px cyan, 0 0 25px 15px #2d00ff; /* 외부 테두리 그림자 효과 */
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(1px);
+  /* 배경 흐림 효과 */
+  box-shadow: 0 0 15px 5px cyan, 0 0 25px 15px #2d00ff;
+  /* 외부 테두리 그림자 효과 */
 }
 
 /* 채팅 창 */
@@ -156,7 +168,8 @@ export default defineComponent({
   height: 550px;
   overflow-y: auto;
   padding: 20px;
-  background-color: transparent; /* 배경을 투명하게 설정 */
+  background-color: transparent;
+  /* 배경을 투명하게 설정 */
 }
 
 /* 각 메시지의 스타일 */
@@ -164,7 +177,8 @@ export default defineComponent({
   display: flex;
   align-items: flex-start;
   margin-bottom: 15px;
-  max-width: 70%; /* 메시지 최대 너비 */
+  max-width: 70%;
+  /* 메시지 최대 너비 */
 }
 
 .user {
@@ -181,8 +195,10 @@ export default defineComponent({
   width: 45px;
   height: 45px;
   border-radius: 50%;
-  margin: 0 10px; /* 아바타 좌우 여백 추가 */
-  border: 2px solid transparent; /* 기본적으로 투명한 테두리 설정 */
+  margin: 0 10px;
+  /* 아바타 좌우 여백 추가 */
+  border: 2px solid transparent;
+  /* 기본적으로 투명한 테두리 설정 */
   background-image: linear-gradient(45deg, cyan, #2d00ff), linear-gradient(45deg, cyan, #2d00ff);
   background-origin: border-box;
   background-clip: padding-box, border-box;
@@ -192,18 +208,22 @@ export default defineComponent({
 .message-content {
   padding: 10px 15px;
   border-radius: 18px;
-  max-width: calc(100% - 60px); /* 아바타 크기를 고려한 최대 너비 */
-  background-color: rgba(255, 255, 255, 0.8); /* 메시지 배경을 약간 투명하게 설정 */
+  max-width: calc(100% - 60px);
+  /* 아바타 크기를 고려한 최대 너비 */
+  background-color: rgba(255, 255, 255, 0.8);
+  /* 메시지 배경을 약간 투명하게 설정 */
 }
 
 .user .message-content {
-  background-color: rgb(44, 44, 44); /* 사용자 메시지 배경 */
+  background-color: rgb(44, 44, 44);
+  /* 사용자 메시지 배경 */
   color: white;
   border-radius: 20px 20px 0px 20px;
 }
 
 .ai .message-content {
-  background-color: lightgray; /* AI 메시지 배경 */
+  background-color: lightgray;
+  /* AI 메시지 배경 */
   color: black;
   border-radius: 20px 20px 20px 0px;
 }
@@ -211,26 +231,37 @@ export default defineComponent({
 /* 메시지 입력 영역 스타일 */
 .input-area {
   display: flex;
-  align-items: center;  /* 세로 가운데 정렬 */
+  align-items: center;
+  /* 세로 가운데 정렬 */
   margin: 1%;
-  background-color: rgba(255, 255, 255, 0.1); /* 입력 영역 배경을 약간 투명하게 설정 */
-  border-radius: 15px; /* 모서리를 둥글게 */
-  width: 98%;  /* 전체 너비 */
-  
+  background-color: rgba(255, 255, 255, 0.1);
+  /* 입력 영역 배경을 약간 투명하게 설정 */
+  border-radius: 15px;
+  /* 모서리를 둥글게 */
+  width: 98%;
+  /* 전체 너비 */
+
 }
 
 textarea {
   flex-grow: 1;
   border: none;
   padding: 10px;
-  resize: none; /* 사용자가 크기를 조정할 수 없도록 설정 */
-  overflow: hidden; /* 스크롤바를 숨김 */
-  height: 40px; /* 고정된 높이 */
-  border-radius: 10px; /* 모서리를 둥글게 */
+  resize: none;
+  /* 사용자가 크기를 조정할 수 없도록 설정 */
+  overflow: hidden;
+  /* 스크롤바를 숨김 */
+  height: 40px;
+  /* 고정된 높이 */
+  border-radius: 10px;
+  /* 모서리를 둥글게 */
   box-sizing: border-box;
-  font-size: 15px; /* 글자 크기 조정 */
-  background-color: rgba(255, 255, 255, 0.1); /* 메시지 입력 창 배경 */
-  color: white; /* 글자 색상 */
+  font-size: 15px;
+  /* 글자 크기 조정 */
+  background-color: rgba(255, 255, 255, 0.1);
+  /* 메시지 입력 창 배경 */
+  color: white;
+  /* 글자 색상 */
 }
 
 /* 전송 버튼 스타일 */
@@ -247,7 +278,8 @@ button {
 
 /* 텍스트 및 버튼 컨테이너 스타일 */
 .text-container {
-  text-align: left;             /* 텍스트 정렬 */
+  text-align: left;
+  /* 텍스트 정렬 */
   max-width: 700px;
 }
 
@@ -255,7 +287,8 @@ button {
 .subtitle {
   font-size: 30px;
   font-weight: bold;
-  background: linear-gradient(to right, rgb(9, 209, 39), #2d00ff); /* 그라데이션 효과 */
+  background: linear-gradient(to right, rgb(9, 209, 39), #2d00ff);
+  /* 그라데이션 효과 */
   -webkit-background-clip: text;
   color: transparent;
 }
@@ -270,9 +303,12 @@ button {
 /* 페이지 이동 버튼들 스타일 */
 .buttons {
   display: flex;
-  flex-direction: row;                    /* 버튼을 양옆으로 배치 */
-  gap: 20px;                              /* 버튼 사이의 간격 */
-  margin-left: 20px;                      /* 버튼과 텍스트 사이 간격 */
+  flex-direction: row;
+  /* 버튼을 양옆으로 배치 */
+  gap: 20px;
+  /* 버튼 사이의 간격 */
+  margin-left: 20px;
+  /* 버튼과 텍스트 사이 간격 */
 }
 
 .goToProduct-button,
@@ -280,9 +316,10 @@ button {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  background-color: rgba(0, 0, 0, 0.8); /* 버튼 배경 색상 */
+  background-color: rgba(0, 0, 0, 0.8);
+  /* 버튼 배경 색상 */
   color: #fff;
-  border: 1px solid lightgrey; 
+  border: 1px solid lightgrey;
   padding: 15px 20px;
   cursor: pointer;
   border-radius: 15px;
@@ -294,19 +331,22 @@ button {
 
 .goToProduct-button:hover,
 .goToCommunity-button:hover {
-  background-color: rgba(0, 255, 55, 0.233); /* 호버시 배경 색상 변화 */
+  background-color: rgba(0, 255, 55, 0.233);
+  /* 호버시 배경 색상 변화 */
 }
 
 /* 버튼 아이콘 스타일 */
 .button-icon {
   width: 30px;
   height: 30px;
-  margin-right: 15px; /* 아이콘과 텍스트 사이 간격 */
+  margin-right: 15px;
+  /* 아이콘과 텍스트 사이 간격 */
 }
 
 /* 푸터 스타일 - 배경 투명화 */
 .footer-container {
-  background-color: rgba(0, 0, 0, 0.5); /* 배경을 반투명하게 설정 */
+  background-color: rgba(0, 0, 0, 0.5);
+  /* 배경을 반투명하게 설정 */
   color: #9b9b9b;
   font-size: 13px;
   text-align: center;
@@ -315,5 +355,4 @@ button {
   width: 100%;
   bottom: 0;
 }
-
 </style>
