@@ -81,7 +81,7 @@ export default defineComponent({
   methods: {
     ...mapActions(authenticationModule, ["requestKakaoLogoutToDjango"]),
     ...mapActions(googleAuthenticationModule, ["requestGoogleLogoutToDjango"]),
-    ...mapActions(userInputModule, ['requestAnswerToFastAPI']),
+    ...mapActions(userInputModule, ['requestInferToFastAPI', 'requestInferedAnswerToFastAPI']),
 
     goToProductList() {
       router.push("/product/list");
@@ -95,7 +95,9 @@ export default defineComponent({
         this.chatHistory.push({ type: 'user', content: this.userInput });
         this.userInputMessage = this.userInput
         this.userInput = '';
-        this.aiOutput = await this.requestAnswerToFastAPI({ "data": this.userInputMessage })
+        await this.requestInferToFastAPI({ "data": this.userInputMessage })
+        const response = await this.requestInferedAnswerToFastAPI()
+        this.aiOutput = response.generatedText
         this.chatHistory.push({ type: 'ai', content: this.aiOutput });
         
         this.aiOutput = ''
