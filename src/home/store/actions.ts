@@ -4,18 +4,19 @@ import axiosInst from "@/utility/axiosInstance"
 import { UserInputState } from "./states"
 
 export type UserInputActions = {
-    requestAnswerToFastAPI(
+    requestInferToFastAPI(
         context: ActionContext<UserInputState, any>,
         payload: { data: string }): Promise<string>
+        requestInferedAnswerToFastAPI(context: ActionContext<UserInputState, any>): Promise<string>
 }
 
 const actions: UserInputActions = {
-    async requestAnswerToFastAPI(
+    async requestInferToFastAPI(
         context: ActionContext<UserInputState, any>,
         payload: { data: string }): Promise<string> {
 
         try {
-            console.log('requestAnswerToFastAPI()')
+            console.log('requestInferToFastAPI()')
             const { data } = payload
             console.log("userInput:", data)
             const command = 6
@@ -24,10 +25,22 @@ const actions: UserInputActions = {
                 '/request-ai-command', { command, "data":[data] })
             return response.data
         } catch (error) {
-            console.log('requestAnswerToFastAPI() 중 문제 발생:', error)
+            console.log('requestInferToFastAPI() 중 문제 발생:', error)
             throw error
         }
-    }
+    },
+    async requestInferedAnswerToFastAPI(context: ActionContext<UserInputState, any>): Promise<string> {
+        try {
+            console.log('requestInferedAnswerToFastAPI()')
+            const response = await axiosInst.fastapiAxiosInst.get(
+                '/llama-three-test-result')
+            console.log('response.data', response.data)
+            return response.data
+        } catch (error) {
+            console.log('requestInferedAnswerToFastAPI() 중 문제 발생:', error)
+            throw error
+        }
+    },
 }
 
 export default actions;
