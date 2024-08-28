@@ -35,6 +35,16 @@
             <img :src="message.type === 'user' ? userAvatar : aiAvatar" :alt="message.type + ' avatar'" class="avatar">
             <div class="message-content">{{ message.content }}</div>
           </div>
+
+           <!-- 로딩 상태일 때 표시되는 ... 말풍선 -->
+           <div v-if="isLoading" class="message ai">
+            <img :src="aiAvatar" alt="ai avatar" class="avatar">
+            <div class="loading-message">
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+            </div>
+          </div>
         </div>
         <div class="input-area">
           <textarea v-model="userInput" placeholder="    메시지를 입력하세요..." @keyup.enter="sendMessage"></textarea>
@@ -71,7 +81,8 @@ export default defineComponent({
         { type: 'ai', content: '안녕하세요! 어떤 도움이 필요하신가요?' }
       ],
       userAvatar: userAvatarSrc,
-      aiAvatar: aiAvatarSrc
+      aiAvatar: aiAvatarSrc,
+      isLoading: false,  // 로딩 상태 추가
     };
   },
   computed: {
@@ -95,12 +106,37 @@ export default defineComponent({
         this.chatHistory.push({ type: 'user', content: this.userInput });
         this.userInputMessage = this.userInput
         this.userInput = '';
+
+        this.isLoading = true;  // ... 로딩 상태 활성화
+
+         // FastAPI로 사용자 입력 전송
         await this.requestInferToFastAPI({ "data": this.userInputMessage })
-        const response = await this.requestInferedAnswerToFastAPI()
-        this.aiOutput = response.generatedText
-        this.chatHistory.push({ type: 'ai', content: this.aiOutput });
         
-        this.aiOutput = ''
+        // const response = await this.requestInferedAnswerToFastAPI()
+        // this.aiOutput = response.generatedText
+        // this.chatHistory.push({ type: 'ai', content: this.aiOutput });
+        
+        // this.aiOutput = ''
+        
+        // ★★★ 응답을 기다리는 부분
+        // 서버에서 응답이 올 때까지 2초씩 대기하면서 최대 20번(즉, 최대 40초)까지 요청을 반복합니다. 
+        // 응답을 받으면 이를 처리하여 클라이언트 UI에 표시하게 됩니다.
+        let response = null;
+        for (let i = 0; i < 30; i++) {
+            response = await this.requestInferedAnswerToFastAPI();
+            if (response && response.generatedText) {
+                break;  // 응답이 오면 루프 탈출
+            }
+            await new Promise(resolve => setTimeout(resolve, 2000));  // 2초 대기
+        }
+
+        this.isLoading = false;  // 로딩 상태 해제
+
+        if (response && response.generatedText) {
+            this.chatHistory.push({ type: 'ai', content: response.generatedText });
+        } else {
+            console.log('서버에서 응답을 받지 못했습니다.');
+        }
       }
     }
   },
@@ -356,5 +392,51 @@ button {
   position: fixed;
   width: 100%;
   bottom: 0;
+}
+
+
+/* ★★★ ... 로딩 말풍선 */
+.loading-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 15px;
+  border-radius: 18px;
+  background-color: rgba(233, 233, 235, 0.8);
+  color: black;
+  font-style: italic;
+  width: 50px;
+}
+
+.loading-message .dot {
+  height: 10px;
+  width: 10px;
+  margin: 0 2px;
+  background-color: black;
+  border-radius: 50%;
+  display: inline-block;
+  opacity: 0;
+  animation: loading-animation 1.5s infinite ease-in-out;
+}
+
+.loading-message .dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.loading-message .dot:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.loading-message .dot:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes loading-animation {
+  0%, 80%, 100% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
 }
 </style>
