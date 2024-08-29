@@ -33,7 +33,8 @@
         <div class="chat-window">
           <div v-for="(message, index) in chatHistory" :key="index" :class="['message', message.type]">
             <img :src="message.type === 'user' ? userAvatar : aiAvatar" :alt="message.type + ' avatar'" class="avatar">
-            <div class="message-content">{{ message.content }}</div>
+            <!-- <div class="message-content">{{ message.content }}</div> -->
+            <div class="message-content" v-html="renderMessageContent(message)"></div>
           </div>
 
            <!-- 로딩 상태일 때 표시되는 ... 말풍선 -->
@@ -65,6 +66,7 @@ import userAvatarSrc from '@/assets/images/fixed/user-avatar.png'  // 사용자 
 import aiAvatarSrc from '@/assets/images/fixed/ai-avatar.png'  // AI 아바타 이미지 경로
 import router from "@/router";
 import { mapActions, mapState } from "vuex";
+import markdownIt from 'markdown-it'
 
 const authenticationModule = "authenticationModule";
 const googleAuthenticationModule = "googleAuthenticationModule";
@@ -82,7 +84,8 @@ export default defineComponent({
       ],
       userAvatar: userAvatarSrc,
       aiAvatar: aiAvatarSrc,
-      isLoading: false,  // 로딩 상태 추가
+      isLoading: false,  // 로딩 상태 추가,
+      md: new markdownIt() // markdown-it
     };
   },
   computed: {
@@ -93,7 +96,13 @@ export default defineComponent({
     ...mapActions(authenticationModule, ["requestKakaoLogoutToDjango"]),
     ...mapActions(googleAuthenticationModule, ["requestGoogleLogoutToDjango"]),
     ...mapActions(userInputModule, ['requestInferToFastAPI', 'requestInferedAnswerToFastAPI']),
-
+    renderMessageContent(message) {
+      if (message.type !== 'user') {
+        return this.md.render(message.content)
+      } else {
+        return message.content
+      }
+    },
     goToProductList() {
       router.push("/product/list");
     },
@@ -438,5 +447,16 @@ button {
   40% {
     opacity: 1;
   }
+}
+
+/* 순서 있는 목록(ol)과 순서 없는 목록(ul)에 대한 스타일 추가 */
+.message-content ol, .message-content ul {
+  padding-left: 20px; /* 왼쪽 여백 설정 */
+  margin: 0 0 10px 20px; /* 목록이 잘리지 않도록 마진 추가 */
+}
+
+/* li 항목에 대한 추가 스타일 */
+.message-content li {
+  margin-bottom: 5px;
 }
 </style>
