@@ -122,7 +122,7 @@ export default {
   display: flex;
   justify-content: center;
   margin-top: 200px;
-  max-height: 35%;  
+  max-height: 37%;  
 }
 
 .id-card:hover {
