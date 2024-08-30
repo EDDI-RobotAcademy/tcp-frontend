@@ -102,15 +102,22 @@ body {
 .markdown-content {
   margin: 0px !important;  
   box-sizing: border-box !important;
+  line-height: 1.5; 
 }
 
 .markdown-content ol,
 .markdown-content ul {
-  margin: 10px !important;  
+  margin: 10px !important;
+  line-height: 1.5;   
 }
 
 .markdown-content li {
-  margin: 20px !important;  
+  margin: 20px !important;
+  line-height: 1.5;   
+}
+
+p.description {
+    line-height: 1.5; 
 }
 
 </style>

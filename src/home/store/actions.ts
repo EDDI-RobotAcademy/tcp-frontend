@@ -47,7 +47,7 @@ const actions: UserInputActions = {
             console.log('requestInferedAnswerToFastAPI()')
 
             let response: AxiosResponse<any>;
-            const maxAttempts = 30; // 최대 시도 횟수
+            const maxAttempts = 50; // 최대 시도 횟수
             const delay = 2000; // 각 시도 사이의 지연시간 (ms)
             
             for (let attempt = 1; attempt <= maxAttempts; attempt++) {

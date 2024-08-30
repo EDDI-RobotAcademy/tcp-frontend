@@ -5,7 +5,7 @@
     </div>
 
     <div class="content-wrapper">
-      <div class="text-and-buttons" style="margin-top: 5vh;">
+      <div class="text-and-buttons" style="margin-top: 3vh; line-height: 1.5;">
         <div class="text-container">
           <p class="subtitle">"Text Chat Prompt for TCP SINCE 2024"</p>
           <div style="margin-bottom: 10px"></div>
@@ -19,7 +19,6 @@
         <div class="buttons">
           <button class="goToCommunity-button" @click="goToCommunityList">
             <img :src="require('@/assets/images/fixed/icon-A.png')" class="button-icon">
-
             AI 논문 커뮤니티로<br>이동하기
           </button>
           <button class="goToProduct-button" @click="goToProductList">
@@ -29,7 +28,7 @@
         </div>
       </div>
 
-      <div class="prompt-container">
+      <div class="prompt-container" @dragover.prevent @drop.prevent="handleDrop">
         <div class="chat-window">
           <div v-for="(message, index) in chatHistory" :key="index" :class="['message', message.type]">
             <img :src="message.type === 'user' ? userAvatar : aiAvatar" :alt="message.type + ' avatar'" class="avatar">
@@ -47,9 +46,18 @@
             </div>
           </div>
         </div>
+
         <div class="input-area">
-          <textarea v-model="userInput" placeholder="    메시지를 입력하세요..." @keyup.enter="sendMessage"></textarea>
+          <textarea v-model="userInput" placeholder="메시지를 입력하세요..." @keyup.enter="sendMessage"></textarea>
           <button @click="sendMessage">전송</button>
+          <!-- 파일 선택 버튼 추가 -->
+          <input type="file" ref="fileInput" @change="handleFileSelect" style="display: none;" />
+          <button @click="triggerFileSelect">파일 선택</button>
+        </div>
+
+        <!-- 선택된 파일명을 보여주기 위한 영역 -->
+        <div v-if="selectedFileName" class="selected-file">
+          <p>업로드된 파일: {{ selectedFileName }}</p>
         </div>
       </div>
     </div>
@@ -84,8 +92,13 @@ export default defineComponent({
       ],
       userAvatar: userAvatarSrc,
       aiAvatar: aiAvatarSrc,
+
       isLoading: false,  // 로딩 상태 추가,
-      md: new markdownIt() // markdown-it
+      md: new markdownIt(), // markdown-it
+      
+      selectedFile: null,  // 업로드된 파일을 저장하는 변수
+      selectedFileName: '',  // 선택된 파일명을 저장하는 변수
+
     };
   },
   computed: {
@@ -98,7 +111,8 @@ export default defineComponent({
     ...mapActions(userInputModule, ['requestInferToFastAPI', 'requestInferedAnswerToFastAPI']),
     renderMessageContent(message) {
       if (message.type !== 'user') {
-        return this.md.render(message.content)
+        // markdown-it로 렌더링된 내용에 .markdown-content 클래스를 추가
+        return `<div class="markdown-content">${this.md.render(message.content)}</div>`;
       } else {
         return message.content
       }
@@ -111,25 +125,27 @@ export default defineComponent({
     },
 
     async sendMessage() {
-      if (this.userInput.trim()) {
-        this.chatHistory.push({ type: 'user', content: this.userInput });
-        this.userInputMessage = this.userInput
-        this.userInput = '';
+      if (this.userInput.trim() || this.selectedFile) {
+        // 텍스트 메시지를 채팅 히스토리에 추가
+        if (this.userInput.trim()) {
+          this.chatHistory.push({ type: 'user', content: this.userInput });
+          this.userInputMessage = this.userInput;
+        }
 
+        this.userInput = '';
         this.isLoading = true;  // ... 로딩 상태 활성화
 
-         // FastAPI로 사용자 입력 전송
-        await this.requestInferToFastAPI({ "data": this.userInputMessage })
-        
-        // const response = await this.requestInferedAnswerToFastAPI()
-        // this.aiOutput = response.generatedText
-        // this.chatHistory.push({ type: 'ai', content: this.aiOutput });
-        
-        // this.aiOutput = ''
-        
-        // ★★★ 응답을 기다리는 부분
-        // 서버에서 응답이 올 때까지 2초씩 대기하면서 최대 20번(즉, 최대 40초)까지 요청을 반복합니다. 
-        // 응답을 받으면 이를 처리하여 클라이언트 UI에 표시하게 됩니다.
+        // FastAPI로 사용자 입력 또는 파일 전송
+        if (this.selectedFile) {
+          const formData = new FormData();
+          formData.append("file", this.selectedFile);
+          await this.requestInferToFastAPI({ data: formData });
+          this.selectedFile = null;  // 파일 초기화
+          this.selectedFileName = '';  // 파일명 초기화
+        } else {
+          await this.requestInferToFastAPI({ data: { text: this.userInputMessage } });
+        }
+
         let response = null;
         for (let i = 0; i < 30; i++) {
             response = await this.requestInferedAnswerToFastAPI();
@@ -146,6 +162,26 @@ export default defineComponent({
         } else {
             console.log('서버에서 응답을 받지 못했습니다.');
         }
+      }
+    },
+
+    triggerFileSelect() {
+      this.$refs.fileInput.click();
+    },
+
+    handleFileSelect(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.selectedFile = file;
+        this.selectedFileName = file.name;  // 파일명을 저장하여 화면에 표시
+      }
+    },
+
+    handleDrop(event) {
+      const file = event.dataTransfer.files[0];
+      if (file) {
+        this.selectedFile = file;
+        this.selectedFileName = file.name;  // 파일명을 저장하여 화면에 표시
       }
     }
   },
@@ -224,8 +260,7 @@ export default defineComponent({
   display: flex;
   align-items: flex-start;
   margin-bottom: 15px;
-  max-width: 70%;
-  /* 메시지 최대 너비 */
+  max-width: 75%;
 }
 
 .user {
@@ -449,14 +484,11 @@ button {
   }
 }
 
-/* 순서 있는 목록(ol)과 순서 없는 목록(ul)에 대한 스타일 추가 */
-.message-content ol, .message-content ul {
-  padding-left: 20px; /* 왼쪽 여백 설정 */
-  margin: 0 0 10px 20px; /* 목록이 잘리지 않도록 마진 추가 */
+/* 선택된 파일명과 전송 버튼을 표시하기 위한 스타일 */
+.selected-file {
+  margin-right: 20px;
+  text-align: right;
+  color: white;
 }
 
-/* li 항목에 대한 추가 스타일 */
-.message-content li {
-  margin-bottom: 5px;
-}
 </style>
