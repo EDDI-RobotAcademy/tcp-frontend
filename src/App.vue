@@ -25,7 +25,7 @@ export default defineComponent({
 
 
 
-<style scoped>
+<style>
 
 * {margin:0; padding:0;}
 
@@ -46,8 +46,7 @@ time, mark, audio, video {
   margin: 0;
   padding: 0;
   border: 0;
-  font-size: 100%;
-  font: inherit;
+  font-size: 100%;  
   vertical-align: baseline;
 }
 
@@ -59,20 +58,6 @@ footer, header, hgroup, menu, nav, section {
 
 body {
   line-height: 1;
-}
-
-ol, ul {
-  list-style: none;
-}
-
-blockquote, q {
-  quotes: none;
-}
-
-blockquote:before, blockquote:after,
-q:before, q:after {
-  content: '';
-  content: none;
 }
 
 table {
@@ -111,6 +96,21 @@ img {
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* markdown-it 관련 스타일 적용 */
+.markdown-content {
+  margin: 0px !important;  
+  box-sizing: border-box !important;
+}
+
+.markdown-content ol,
+.markdown-content ul {
+  margin: 10px !important;  
+}
+
+.markdown-content li {
+  margin: 20px !important;  
 }
 
 </style>
