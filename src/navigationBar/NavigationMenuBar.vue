@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar color="rgba(0, 0, 0, 0.85)" app dark height="64">
+  <v-app-bar color="rgba(0, 0, 0, 1)" app dark height="64">
     <v-toolbar-title class="navbar-title">
       <v-btn text @click="goToHome" class="navbar-title-btn">        
         <v-icon class="home-icon"> mdi-console </v-icon>
@@ -256,8 +256,5 @@ export default {
 .v-list-item:hover {
   background-color: rgba(0, 255, 55, 0.25);
 }
-
-
-
 
 </style>
