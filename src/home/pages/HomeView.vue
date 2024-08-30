@@ -21,7 +21,7 @@
             <img :src="require('@/assets/images/fixed/icon-A.png')" class="button-icon">
             AI 논문 커뮤니티로<br>이동하기
           </button>
-          <button class="goToProduct-button" @click="goToProductList">
+          <button class="goToDocument-button" @click="goToDocumentOriginList">
             <img :src="require('@/assets/images/fixed/icon-B.png')" class="button-icon">
             AI 논문 자료 구경하러<br>이동하기
           </button>
@@ -117,12 +117,12 @@ export default defineComponent({
         return message.content
       }
     },
-    goToProductList() {
-      router.push("/product/list");
-    },
     goToCommunityList() {
       router.push("/community/list");
     },
+    goToDocumentOriginList() {
+      router.push("/DocumentOrigin/list");
+    },    
 
     async sendMessage() {
       if (this.userInput.trim() || this.selectedFile) {
@@ -393,7 +393,7 @@ button {
   /* 버튼과 텍스트 사이 간격 */
 }
 
-.goToProduct-button,
+.goToDocument-button,
 .goToCommunity-button {
   display: flex;
   align-items: center;
@@ -411,7 +411,7 @@ button {
   transition: background-color 0.3s ease;
 }
 
-.goToProduct-button:hover,
+.goToDocument-button:hover,
 .goToCommunity-button:hover {
   background-color: rgba(0, 255, 55, 0.233);
   /* 호버시 배경 색상 변화 */
