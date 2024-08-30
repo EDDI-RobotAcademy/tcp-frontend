@@ -75,6 +75,8 @@ import aiAvatarSrc from '@/assets/images/fixed/ai-avatar.png'  // AI 아바타 �
 import router from "@/router";
 import { mapActions, mapState } from "vuex";
 import markdownIt from 'markdown-it'
+import { s3Client, env } from "@/utility/awsFileS3Config"
+import { PutObjectCommand} from '@aws-sdk/client-s3'
 
 const authenticationModule = "authenticationModule";
 const googleAuthenticationModule = "googleAuthenticationModule";
@@ -136,15 +138,7 @@ export default defineComponent({
         this.isLoading = true;  // ... 로딩 상태 활성화
 
         // FastAPI로 사용자 입력 또는 파일 전송
-        if (this.selectedFile) {
-          const formData = new FormData();
-          formData.append("file", this.selectedFile);
-          await this.requestInferToFastAPI({ data: formData });
-          this.selectedFile = null;  // 파일 초기화
-          this.selectedFileName = '';  // 파일명 초기화
-        } else {
-          await this.requestInferToFastAPI({ data: { text: this.userInputMessage } });
-        }
+        await this.requestInferToFastAPI({ data: { text: this.userInputMessage } })
 
         let response = null;
         for (let i = 0; i < 30; i++) {
@@ -162,6 +156,38 @@ export default defineComponent({
         } else {
             console.log('서버에서 응답을 받지 못했습니다.');
         }
+      }
+
+      // S3에 파일 업로드
+      if (this.selectedFile) {
+        this.uploading = true;
+        this.uploadSuccess = false;
+        
+        const BUCKET_NAME = process.env.VUE_APP_AWS_S3_BUCKET_NAME
+        const params = {
+            Bucket: BUCKET_NAME,
+            Key: this.selectedFileName,
+            Body: this.selectedFile,
+            ACL: 'private'
+        };
+
+        try {
+            console.log('Uploading file with params:', params); // Debug information
+            const data = await s3Client.send(new PutObjectCommand(params));
+            this.uploading = false;
+            this.uploadSuccess = true;
+            this.fileKey = params.Key;
+            console.log('File uploaded successfully:', data);
+            await this.requestAnalyzePaperFileToFastAPI({ "data": this.selectedFileName })
+        } catch (err) {
+            this.uploading = false;
+            console.error('Error uploading file:', err);
+        }
+        console.log('selectedFileName: ', this.selectedFileName)
+
+        // 선택된 파일 및 파일명을 초기화
+        this.selectedFile = null;
+        this.selectedFileName = '';
       }
     },
 
