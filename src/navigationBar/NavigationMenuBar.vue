@@ -8,36 +8,19 @@
     </v-toolbar-title>
     <v-spacer></v-spacer>
 
-    <!-- <v-btn text @click="goToProductList" class="btn-text">
-      <span>논문 소개</span>
-    </v-btn> -->
-
     <v-btn text @click="goToCommunityList" class="btn-text">
       <span>COMMUNITY Board</span>
     </v-btn>
 
-    <!-- <v-btn text @click="goToReviewList" class="btn-text">
-      <span>TCP REVIEW</span>
-    </v-btn> -->
-
-    <!-- <v-btn v-if="isAuthenticated" text @click="goToCart" class="btn-text">
-      <span>Cart</span>
-    </v-btn>
-
-    <v-btn v-if="isAuthenticated" text @click="goToOrder" class="btn-text">
-      <span>Order</span>
-    </v-btn> -->
-
     <v-menu close-on-content-click>
       <template v-slot:activator="{ props }">
-        <v-btn v-bind="props" class="btn-text">
-          <!-- <b>Report</b> -->
+        <v-btn v-bind="props" class="btn-text">          
           <b>My Document</b>
         </v-btn>
       </template>
       <v-list>
         <v-list-item
-          v-for="(item, index) in reportItems"
+          v-for="(item, index) in myDocumentItems"
           :key="index"
           @click="item.action"
         >
@@ -86,33 +69,27 @@ const googleAuthenticationModule = "googleAuthenticationModule";
 export default {
   data() {
     return {
-      reportItems: [
-        {
-          title: "내가 저장한 논문 요약",
-          action: () => {
-            this.goToPurchaseTrendAnalysisPage();
-          },
-        },
+      myDocumentItems: [
         {
           title: "내가 저장한 논문 원본",
           action: () => {
-            this.goToCustomerChurnPredictionPage();
+            this.goToDocumentOriginList();
           },
         },
+        {
+          title: "내가 저장한 논문 요약",
+          action: () => {
+            this.goToDocumentSummaryList();
+          },
+        },        
       ],
       myPageItems: [
         {
-          title: "MY PAGE",
+          title: "회원 정보",
           action: () => {
             this.goToMyPage();
           },
-        },
-        {
-          title: "LOGOUT",
-          action: () => {
-            this.signOut();
-          },
-        },
+        },        
       ],
       isUserAuthenticated: localStorage.getItem('isUserAuthenticated'),
     };
@@ -125,21 +102,25 @@ export default {
   methods: {
     ...mapActions(authenticationModule, ["requestKakaoLogoutToDjango"]),
     ...mapActions(googleAuthenticationModule, ["requestGoogleLogoutToDjango"]),
+    
     goToHome() {
       router.push("/");
-    },
-    goToReport() {
-      router.push("/report");
-    },
-    goToProductList() {
-      router.push("/product/list");
-    },
+    },    
     goToCommunityList() {
       router.push("/community/list");
     },
-    goToReviewList() {
-      router.push("/review/list");
+
+    goToDocumentOriginList() {
+      router.push("/DocumentOrigin/list");
     },
+    goToDocumentSummaryList() {
+      router.push("/DocumentSummary/list");
+    },
+
+    goToMyPage() {
+      router.push("/account/mypage");
+    },
+
     signIn() {
       router.push("/account/login");
     },
@@ -159,23 +140,9 @@ export default {
         this.$store.state.accountModule.isAuthenticatedNormal = false;
       }
       router.push("/");
-    },
-    goToCart() {
-      router.push("/cart/list");
-    },
-    goToOrder() {
-      router.push("/order/list");
-    },
-    goToMyPage() {
-      router.push("/account/mypage");
-    },
-    goToPurchaseTrendAnalysisPage() {
-      router.push("/report/purchase-trend-analysis");
-    },
-    goToCustomerChurnPredictionPage() {
-      router.push("/report/customer-churn-prediction");
-    },
+    },    
   },
+
   mounted() {
     console.log("navigation bar mounted()");
     const userToken = localStorage.getItem("userToken");
@@ -248,9 +215,9 @@ export default {
 .v-menu > .v-overlay__content > .v-card,
 .v-menu > .v-overlay__content > .v-sheet,
 .v-menu > .v-overlay__content > .v-list {
-  background-color: rgba(0, 255, 55, 0.1);  
-  color: darkgreen;
-  border: 2px solid green;
+  background-color: rgba(2, 74, 27, 0.479);  
+  color: rgb(0, 255, 0);
+  border: 2px solid rgb(0, 255, 0);
 }
 
 .v-list-item:hover {
