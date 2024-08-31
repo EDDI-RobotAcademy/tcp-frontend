@@ -7,7 +7,10 @@ export type UserInputActions = {
     requestInferToFastAPI(
         context: ActionContext<UserInputState, any>,
         payload: { data: string }): Promise<string>
-        requestInferedAnswerToFastAPI(context: ActionContext<UserInputState, any>): Promise<string>
+    requestInferedAnswerToFastAPI(context: ActionContext<UserInputState, any>): Promise<string>
+    requestAnalyzePaperFileToFastAPI(
+        context: ActionContext<UserInputState, any>,
+        payload: { data: string }): Promise<string>
 }
 
 const actions: UserInputActions = {
@@ -29,18 +32,6 @@ const actions: UserInputActions = {
             throw error
         }
     },
-    // async requestInferedAnswerToFastAPI(context: ActionContext<UserInputState, any>): Promise<string> {
-    //     try {
-    //         console.log('requestInferedAnswerToFastAPI()')
-    //         const response = await axiosInst.fastapiAxiosInst.get(
-    //             '/llama-three-test-result')
-    //         console.log('response.data', response.data)
-    //         return response.data
-    //     } catch (error) {
-    //         console.log('requestInferedAnswerToFastAPI() 중 문제 발생:', error)
-    //         throw error
-    //     }
-    // },
 
     async requestInferedAnswerToFastAPI(context: ActionContext<UserInputState, any>): Promise<string> {
         try {
@@ -65,6 +56,25 @@ const actions: UserInputActions = {
             throw new Error('결과를 가져오는 데 실패했습니다.');
         } catch (error) {
             console.log('requestInferedAnswerToFastAPI() 중 문제 발생:', error)
+            throw error
+        }
+    },
+
+    async requestAnalyzePaperFileToFastAPI(
+        context: ActionContext<UserInputState, any>,
+        payload: { data: string }): Promise<string> {
+
+        try {
+            console.log('requestAnalyzePaperFileToFastAPI()')
+            const { data } = payload
+            console.log("userInput:", data)
+            const command = 8
+
+            const response = await axiosInst.fastapiAxiosInst.post(
+                '/request-ai-command', { command, "data":[data] })
+            return response.data
+        } catch (error) {
+            console.log('requestAnalyzePaperFileToFastAPI() 중 문제 발생:', error)
             throw error
         }
     },
