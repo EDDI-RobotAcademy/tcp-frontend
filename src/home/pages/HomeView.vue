@@ -75,8 +75,6 @@ import aiAvatarSrc from '@/assets/images/fixed/ai-avatar.png'  // AI 아바타 �
 import router from "@/router";
 import { mapActions, mapState } from "vuex";
 import markdownIt from 'markdown-it'
-import { s3Client, env } from "@/utility/awsFileS3Config"
-import { PutObjectCommand} from '@aws-sdk/client-s3'
 
 const authenticationModule = "authenticationModule";
 const googleAuthenticationModule = "googleAuthenticationModule";
@@ -136,9 +134,10 @@ export default defineComponent({
 
         this.userInput = '';
         this.isLoading = true;  // ... 로딩 상태 활성화
+        const payload = { text: this.userInputMessage, fileKey: this.selectedFileName, file: this.selectedFile }
 
         // FastAPI로 사용자 입력 또는 파일 전송
-        await this.requestInferToFastAPI({ data: { text: this.userInputMessage, fileKey: this.selectedFileName } })
+        await this.requestInferToFastAPI(payload)
         this.selectedFile = null
         this.selectedFileName = null
 

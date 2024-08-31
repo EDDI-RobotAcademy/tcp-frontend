@@ -2,8 +2,8 @@ import { ActionContext } from "vuex"
 import { AxiosResponse } from "axios"
 import axiosInst from "@/utility/axiosInstance"
 import { UserInputState } from "./states"
-import { s3Client } from "@/utility/awsFileS3Config"
-import { PutObjectCommand } from '@aws-sdk/client-s3'
+import { s3Client, env } from "@/utility/awsFileS3Config"
+import { PutObjectCommand } from "@aws-sdk/client-s3"
 
 export type UserInputActions = {
     requestInferToFastAPI(
@@ -19,10 +19,10 @@ const actions: UserInputActions = {
     async requestInferToFastAPI(
         context: ActionContext<UserInputState, any>,
         payload: { text: string, fileKey: string | null, file: any | null }): Promise<string> {
-
+        console.log("payload:", payload)
+        const { text, fileKey, file } = payload
         try {
             console.log('requestInferToFastAPI()')
-            const { text, fileKey, file } = payload
             console.log("userInput:", text)
             const command = 6
 
@@ -32,7 +32,7 @@ const actions: UserInputActions = {
                     Bucket: BUCKET_NAME,
                     Key: fileKey,
                     Body: file,
-                    ACL: 'private'
+                    // ACL: 'private'
                 };
         
                 try {
