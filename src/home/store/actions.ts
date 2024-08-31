@@ -2,11 +2,13 @@ import { ActionContext } from "vuex"
 import { AxiosResponse } from "axios"
 import axiosInst from "@/utility/axiosInstance"
 import { UserInputState } from "./states"
+import { s3Client } from "@/utility/awsFileS3Config"
+import { PutObjectCommand } from '@aws-sdk/client-s3'
 
 export type UserInputActions = {
     requestInferToFastAPI(
         context: ActionContext<UserInputState, any>,
-        payload: { data: string }): Promise<string>
+        payload: { text: string, fileKey: string | null, file: any | null }): Promise<string>
     requestInferedAnswerToFastAPI(context: ActionContext<UserInputState, any>): Promise<string>
     requestAnalyzePaperFileToFastAPI(
         context: ActionContext<UserInputState, any>,
@@ -16,16 +18,35 @@ export type UserInputActions = {
 const actions: UserInputActions = {
     async requestInferToFastAPI(
         context: ActionContext<UserInputState, any>,
-        payload: { data: string }): Promise<string> {
+        payload: { text: string, fileKey: string | null, file: any | null }): Promise<string> {
 
         try {
             console.log('requestInferToFastAPI()')
-            const { data } = payload
-            console.log("userInput:", data)
+            const { text, fileKey, file } = payload
+            console.log("userInput:", text)
             const command = 6
 
+            if (fileKey) {
+                const BUCKET_NAME = process.env.VUE_APP_AWS_S3_BUCKET_NAME
+                const params = {
+                    Bucket: BUCKET_NAME,
+                    Key: fileKey,
+                    Body: file,
+                    ACL: 'private'
+                };
+        
+                try {
+                    console.log('Uploading file with params:', params); // Debug information
+                    await s3Client.send(new PutObjectCommand(params));
+                    console.log(`upload ${fileKey} to S3 successfully.`)
+                } catch (err) {
+                    console.error('Error uploading file:', err);
+                }
+                console.log('selectedFileName: ', fileKey)
+              }
+
             const response = await axiosInst.fastapiAxiosInst.post(
-                '/request-ai-command', { command, "data":[data] })
+                '/request-ai-command', { command, "data":[text, fileKey] })
             return response.data
         } catch (error) {
             console.log('requestInferToFastAPI() 중 문제 발생:', error)
