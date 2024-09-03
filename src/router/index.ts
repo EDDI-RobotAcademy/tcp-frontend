@@ -4,6 +4,7 @@ import AccountRoutes from '@/account/router/AccountRoutes'
 import AuthenticationRoutes from '@/authentication/router/AuthenticationRoutes'
 import CommunityRoutes from '@/community/router/CommunityRoutes'
 import GoogleAuthenticationRoutes from '@/googleAuthentication/router/GoogleAuthenticationRoutes'
+import DocumentRoutes from '@/document/router/DocumentRoutes'
 
 const routes: Array<RouteRecordRaw> = [
   ...HomeRoutes,
@@ -11,6 +12,7 @@ const routes: Array<RouteRecordRaw> = [
   ...AuthenticationRoutes,
   ...CommunityRoutes,
   ...GoogleAuthenticationRoutes,
+  ...DocumentRoutes,
 ]
 
 const router = createRouter({
