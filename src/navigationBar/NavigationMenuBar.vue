@@ -15,7 +15,7 @@
     <v-menu close-on-content-click>
       <template v-slot:activator="{ props }">
         <v-btn v-bind="props" class="btn-text">          
-          <b>My Document</b>
+          <b>AI-Document</b>
         </v-btn>
       </template>
       <v-list>
@@ -71,17 +71,17 @@ export default {
     return {
       myDocumentItems: [
         {
-          title: "내가 저장한 논문 원본",
+          title: "AI 논문 자료 정리",
           action: () => {
-            this.goToDocumentOriginList();
+            this.goToDocumentList();
           },
         },
-        {
-          title: "내가 저장한 논문 요약",
-          action: () => {
-            this.goToDocumentSummaryList();
-          },
-        },        
+        // {
+        //   title: "내가 저장한 논문 요약",
+        //   action: () => {
+        //     this.goToDocumentSummaryList();
+        //   },
+        // },        
       ],
       myPageItems: [
         {
@@ -110,12 +110,12 @@ export default {
       router.push("/community/list");
     },
 
-    goToDocumentOriginList() {
-      router.push("/DocumentOrigin/list");
+    goToDocumentList() {
+      router.push("/document/list");
     },
-    goToDocumentSummaryList() {
-      router.push("/DocumentSummary/list");
-    },
+    // goToDocumentSummaryList() {
+    //   router.push("/documentSummary/list");
+    // },
 
     goToMyPage() {
       router.push("/account/mypage");
@@ -178,6 +178,7 @@ export default {
 .v-icon.home-icon {
   font-size: 32px;
   margin-right: 0px;
+  color: rgb(0, 255, 0);;
 }
 
 .mdi-icon {
