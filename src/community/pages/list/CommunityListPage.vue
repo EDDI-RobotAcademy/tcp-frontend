@@ -1,17 +1,17 @@
 <template>
   <v-container style="margin: 5% 50px 0px 50px;">
-    <h2 class="mb-4 text-center">COMMUNITY</h2>
+    <h2 class="mb-4 text-center" style="font-size: x-large; color: black;">COMMUNITY</h2>
     <v-card class="mb-4" elevation="2">
       <v-card-text>
         <v-row no-gutters>
-          <v-col cols="12" class="d-flex justify-center mb-4">
+          <v-col cols="12" class="d-flex justify-center mb-1">
             <v-text-field
               v-model="search"
               append-icon="mdi-magnify"
               label="검색"
               single-line
               hide-details
-              @input="filterByTitle"
+              @input="filterByTitle"              
             ></v-text-field>
           </v-col>
         </v-row>
