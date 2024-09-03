@@ -59,6 +59,16 @@
       </v-btn>
     </div>
 
+    <v-dialog v-model="showDeleteDialog" max-width="500px">
+      <v-card class="black-white-dialog">
+        <v-card-text>정말로 삭제하시겠습니까?</v-card-text>
+        <v-card-actions>
+          <v-btn color="green" text @click="showDeleteDialog = false">취소</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn color="red" text @click="confirmDelete">확인</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
