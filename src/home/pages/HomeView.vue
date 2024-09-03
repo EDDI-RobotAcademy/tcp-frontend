@@ -1,4 +1,4 @@
-<template style="overflow-y: hidden;">
+<template>
   <div class="home-container">
     <div class="nav-container">
       <!-- 네비게이션 바 내용 -->
@@ -30,14 +30,18 @@
 
       <div class="prompt-container" @dragover.prevent @drop.prevent="handleDrop">
         <div class="chat-window">
-          <div v-for="(message, index) in chatHistory" :key="index" :class="['message', message.type]">
+          <div
+            v-for="(message, index) in chatHistory"
+            :key="index"
+            :class="['message', message.type]"
+            @contextmenu.prevent="handleRightClick($event, message.content)"
+          >
             <img :src="message.type === 'user' ? userAvatar : aiAvatar" :alt="message.type + ' avatar'" class="avatar">
-            <!-- <div class="message-content">{{ message.content }}</div> -->
             <div class="message-content" v-html="renderMessageContent(message)"></div>
           </div>
 
-           <!-- 로딩 상태일 때 표시되는 ... 말풍선 -->
-           <div v-if="isLoading" class="message ai">
+          <!-- 로딩 상태일 때 표시되는 ... 말풍선 -->
+          <div v-if="isLoading" class="message ai">
             <img :src="aiAvatar" alt="ai avatar" class="avatar">
             <div class="loading-message">
               <div class="dot"></div>
@@ -65,6 +69,67 @@
     <div class="footer-container">
       <p class="reserved-info">2024 Text Chat Prompt Korea LLC. All Rights Reserved.</p>
     </div>
+
+    <!-- 우클릭 메뉴 -->
+    <div
+      v-if="showContextMenu"
+      :style="{ top: contextMenuY + 'px', left: contextMenuX + 'px' }"
+      class="context-menu"
+      @mouseleave="hideContextMenu"
+    >
+      <ul>
+        <li @click="copyContent">답변내용 복사</li>
+        <li @click="openModal">MY DOCUMENT에 저장</li>
+      </ul>
+    </div>
+
+    <!-- 모달 컴포넌트 -->
+    <v-dialog v-model="showModal" max-width="600px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">MY DOCUMENT에 저장</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <v-text-field v-model="title" label="제목" :rules="[v => v.length <= 30 || '제목은 최대 30글자까지 가능합니다.']" maxlength="30"/>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12">
+                <v-file-input
+                  v-model="file"
+                  label="논문 파일을 업로드하거나 Drag & Drop 하세요"
+                  accept=".pdf,.doc,.docx"
+                  prepend-icon="mdi-upload"
+                  show-size
+                  required
+                ></v-file-input>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12">
+                <v-textarea
+                  v-model="content"
+                  label="복사한 요약 내용"
+                  rows="5"
+                  auto-grow
+                  clearable
+                  counter
+                  maxlength="5000"
+                  placeholder="복사한 내용을 Crtl+V로 붙여넣기 하세요 (최대 5000자)"
+                ></v-textarea>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="green" @click="submitDocument" style="text-justify: auto;">저장</v-btn>
+          <v-btn text @click="showModal = false">취소</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -79,6 +144,8 @@ import markdownIt from 'markdown-it'
 const authenticationModule = "authenticationModule";
 const googleAuthenticationModule = "googleAuthenticationModule";
 const userInputModule = 'userInputModule'
+const documentModule = 'documentModule'
+const accountModule = 'accountModule'
 
 export default defineComponent({
   name: "HomeView",
@@ -97,8 +164,17 @@ export default defineComponent({
       md: new markdownIt(), // markdown-it
       
       selectedFile: null,  // 업로드된 파일을 저장하는 변수
-      selectedFileName: null,  // 선택된 파일명을 저장하는 변수
+      selectedFileName: null,  // 선택된 파일명을 저장하는 변수,
 
+      showContextMenu: false,
+      contextMenuX: 0,
+      contextMenuY: 0,
+      selectedContent: '',
+      showModal: false,
+      
+      title: '',      // 모달 제목
+      file: null,     // 모달 업로드 파일
+      content: ''     // 모달 요약
     };
   },
   computed: {
@@ -109,6 +185,9 @@ export default defineComponent({
     ...mapActions(authenticationModule, ["requestKakaoLogoutToDjango"]),
     ...mapActions(googleAuthenticationModule, ["requestGoogleLogoutToDjango"]),
     ...mapActions(userInputModule, ['requestInferToFastAPI', 'requestInferedAnswerToFastAPI']),
+    ...mapActions(documentModule, ['requestCreateDocumentToDjango']),
+    ...mapActions(accountModule, ['requestNicknameToDjango']),
+
     renderMessageContent(message) {
       if (message.type !== 'user') {
         // markdown-it로 렌더링된 내용에 .markdown-content 클래스를 추가
@@ -121,7 +200,7 @@ export default defineComponent({
       router.push("/community/list");
     },
     goToDocumentOriginList() {
-      router.push("/DocumentOrigin/list");
+      router.push("/document/list");
     },    
 
     async sendMessage() {
@@ -178,8 +257,67 @@ export default defineComponent({
         this.selectedFile = file;
         this.selectedFileName = file.name;  // 파일명을 저장하여 화면에 표시
       }
+    },
+
+    handleRightClick(event, content) {
+      event.preventDefault();
+      this.selectedContent = content;
+      this.contextMenuX = event.clientX;
+      this.contextMenuY = event.clientY;
+      this.showContextMenu = true;
+    },
+
+    hideContextMenu() {
+      this.showContextMenu = false;
+    },
+
+    copyContent() {
+      navigator.clipboard.writeText(this.selectedContent).then(() => {
+        alert('답변 내용이 복사되었습니다.');
+      });
+      this.hideContextMenu();
+    },
+
+    openModal() {
+      this.showModal = true;
+      this.hideContextMenu();
+    },
+
+    async submitDocument() {
+      if (this.title.length > 30) {
+        alert('제목은 최대 30글자까지 가능합니다.');
+        return;
+      }
+
+      if (!this.file) {
+        alert('파일을 업로드해야 합니다.');
+        return;
+      }
+
+      if (!this.content) {
+        alert('내용을 입력해야 합니다.');
+        return;
+      }
+
+      const email = localStorage.getItem("email");
+      const nickname = await this.requestNicknameToDjango(email);
+      console.log('nickname:', nickname);
+
+      try {
+        const document = await this.requestCreateDocumentToDjango({
+          title: this.title,
+          writer: nickname,
+          file: this.file,
+          content: this.content // 추가된 content 필드
+        });
+        alert('문서가 성공적으로 저장되었습니다.');
+        this.showModal = false;
+      } catch (error) {
+        console.error('문서 저장 실패:', error);
+        alert('문서 저장에 실패했습니다.');
+      }
     }
-  },
+  }
 });
 </script>
 
@@ -310,7 +448,7 @@ export default defineComponent({
   display: flex;
   align-items: center;
   /* 세로 가운데 정렬 */
-  margin: 1%;
+  margin: 10px;
   background-color: rgba(255, 255, 255, 0.1);
   /* 입력 영역 배경을 약간 투명하게 설정 */
   border-radius: 15px;
@@ -395,7 +533,7 @@ button {
   justify-content: flex-start;
   background-color: rgba(0, 0, 0, 0.8);
   /* 버튼 배경 색상 */
-  color: #fff;
+  color: #ffffff;
   border: 1px solid lightgrey;
   padding: 15px 20px;
   cursor: pointer;
@@ -484,6 +622,59 @@ button {
   margin-right: 20px;
   text-align: right;
   color: white;
+}
+
+/* 컨텍스트 메뉴 스타일 */
+.context-menu {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+.context-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.context-menu li {
+  padding: 10px;
+  cursor: pointer;
+}
+.context-menu li:hover {
+  background-color: #f0f0f0;
+}
+
+
+/* 모달창 관련 스타일 */
+.context-menu {
+  position: absolute;
+  background-color: rgba(2, 74, 27, 0.479); /* 초록색 투명 */
+  color: rgb(0, 255, 0);
+  border: 2px solid rgb(0, 255, 0);
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+.context-menu:hover {
+  background-color: rgba(0, 255, 55, 0.25);
+}
+.v-dialog__content {
+  background-color: rgba(255, 255, 255, 0.75); /* 모달 배경을 초록색 투명하게 설정 */
+}
+.v-card {
+  background-color: rgba(255, 255, 255, 0.75); /* 모달 카드 배경을 초록색 투명하게 설정 */
+}
+/* 모달이 활성화되었을 때의 배경 블러 효과 */
+.v-overlay__scrim::after {
+  backdrop-filter: blur(200px); /* 블러 강도를 200px로 설정 */
+  background-color: rgb(0, 0, 0); /* 반투명한 흰색 배경 */
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+/* 모달이 활성화된 상태에서의 전체 화면 스타일 */
+.v-dialog__content--active .v-dialog {
+  backdrop-filter: inherit; 
 }
 
 </style>
