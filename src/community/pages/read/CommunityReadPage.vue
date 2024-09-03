@@ -153,6 +153,8 @@ export default {
 };
 </script>
 
+
+
 <style scoped>
 .headline {
   text-align: center;
