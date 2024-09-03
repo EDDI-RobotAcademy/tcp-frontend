@@ -216,7 +216,7 @@ export default {
 .v-menu > .v-overlay__content > .v-card,
 .v-menu > .v-overlay__content > .v-sheet,
 .v-menu > .v-overlay__content > .v-list {
-  background-color: rgba(2, 74, 27, 0.479);  
+  background-color: rgba(2, 74, 27, 0.479);
   color: rgb(0, 255, 0);
   border: 2px solid rgb(0, 255, 0);
 }
