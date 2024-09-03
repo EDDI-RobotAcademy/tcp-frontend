@@ -16,6 +16,7 @@
     "axios": "^1.7.4",
     "core-js": "^3.8.3",
     "markdown-it": "^14.1.0",
+    "pdfjs-dist": "^4.5.136",
     "roboto-fontface": "*",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
@@ -24,6 +25,7 @@
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {
+    "@babel/plugin-transform-private-methods": "^7.25.4",
     "@types/jest": "^27.0.1",
     "@types/webfontloader": "^1.0.0",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
@@ -45,7 +47,8 @@
     "ts-jest": "^27.0.4",
     "typescript": "~4.5.5",
     "vue-cli-plugin-vuetify": "~2.5.8",
-    "webpack-plugin-vuetify": "^2.0.0-alpha.0"
+    "webpack-plugin-vuetify": "^2.0.0-alpha.0",
+    "worker-loader": "^3.0.8"
   },
   "eslintConfig": {
     "root": true,
