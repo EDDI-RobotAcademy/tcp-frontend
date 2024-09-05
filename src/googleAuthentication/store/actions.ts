@@ -100,6 +100,9 @@ const actions: GoogleAuthenticationActions = {
         localStorage.removeItem("googleUserToken")
         localStorage.removeItem("email")
         localStorage.removeItem("loginType")
+        if (localStorage.getItem("fileKey")) {
+            localStorage.removeItem("fileKey")
+        }
     }
 
     

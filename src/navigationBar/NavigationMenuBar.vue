@@ -137,6 +137,9 @@ export default {
         localStorage.removeItem("normalToken")
         localStorage.removeItem("email")
         localStorage.removeItem("loginType")
+        if (localStorage.getItem("fileKey")){
+          localStorage.removeItem("fileKey")
+        }
         this.$store.state.accountModule.isAuthenticatedNormal = false;
       }
       router.push("/");
