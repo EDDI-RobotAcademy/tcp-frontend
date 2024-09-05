@@ -174,7 +174,8 @@ export default defineComponent({
       
       title: '',      // 모달 제목
       file: null,     // 모달 업로드 파일
-      content: ''     // 모달 요약
+      content: '',     // 모달 요약
+      currentAIMessage: '',  // 현재 AI 메시지를 저장하는 변수
     };
   },
   computed: {
@@ -201,7 +202,39 @@ export default defineComponent({
     },
     goToDocumentOriginList() {
       router.push("/document/list");
-    },    
+    },
+
+    chunkText(text, chunkSize) {
+      const chunks = [];
+      for (let i = 0; i < text.length; i += chunkSize) {
+        chunks.push(text.substring(i, i + chunkSize));
+      }
+      return chunks;
+    },
+    
+    async streamText(chunks) {
+      this.currentAIMessage = '';  // 초기화
+      let index = 0;
+      const interval = setInterval(() => {
+        if (index < chunks.length) {
+          this.currentAIMessage += chunks[index];
+          this.updateAIMessage();  // AI 메시지 업데이트 메소드 호출
+          index++;
+        } else {
+          clearInterval(interval);
+        }
+      }, 10); // 10ms마다 조각 추가
+    },
+
+    updateAIMessage() {
+      // chatHistory를 갱신하여 화면에 업데이트
+      const lastIndex = this.chatHistory.length - 1;
+      if (this.chatHistory[lastIndex] && this.chatHistory[lastIndex].type === 'ai') {
+        this.chatHistory[lastIndex].content = this.currentAIMessage;
+      } else {
+        this.chatHistory.push({ type: 'ai', content: this.currentAIMessage });
+      }
+    },
 
     async sendMessage() {
       if (this.userInput.trim() || this.selectedFile) {
@@ -236,9 +269,11 @@ export default defineComponent({
         this.isLoading = false;  // 로딩 상태 해제
 
         if (response && response.generatedText) {
-            this.chatHistory.push({ type: 'ai', content: response.generatedText });
+            // this.chatHistory.push({ type: 'ai', content: response.generatedText });
+          const chunks = this.chunkText(response.generatedText, 1); // 숫자는 청크 단위로 나눌 글자 수
+          this.streamText(chunks);
         } else {
-            console.log('서버에서 응답을 받지 못했습니다.');
+          console.log('서버에서 응답을 받지 못했습니다.');
         }
       }
     },
