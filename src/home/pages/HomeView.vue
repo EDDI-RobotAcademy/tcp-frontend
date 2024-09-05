@@ -211,9 +211,13 @@ export default defineComponent({
           this.userInputMessage = this.userInput;
         }
 
+        if (this.selectedFile) {
+          localStorage.setItem("fileKey", this.selectedFileName)
+        }
+
         this.userInput = '';
         this.isLoading = true;  // ... 로딩 상태 활성화
-        const payload = { text: this.userInputMessage, fileKey: this.selectedFileName, file: this.selectedFile }
+        const payload = { text: this.userInputMessage, fileKey: localStorage.getItem("fileKey"), file: this.selectedFile }
 
         // FastAPI로 사용자 입력 또는 파일 전송
         await this.requestInferToFastAPI(payload)

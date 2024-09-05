@@ -105,6 +105,9 @@ const actions: AuthenticationActions = {
         localStorage.removeItem("userToken")
         localStorage.removeItem("email")
         localStorage.removeItem("loginType")
+        if (localStorage.getItem("fileKey")) {
+            localStorage.removeItem("fileKey")
+        }
     }
 }
 
