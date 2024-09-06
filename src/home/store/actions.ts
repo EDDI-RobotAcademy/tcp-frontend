@@ -63,7 +63,7 @@ const actions: UserInputActions = {
             const delay = 2000; // 각 시도 사이의 지연시간 (ms)
             
             for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-                response = await axiosInst.fastapiAxiosInst.get('/llama-three-test-result');
+                response = await axiosInst.fastapiAxiosInst.get('/openai-api-result');
 
                 if (response.data && response.data.generatedText) {
                     console.log('response.data', response.data);
