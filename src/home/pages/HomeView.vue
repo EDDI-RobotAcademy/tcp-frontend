@@ -40,6 +40,7 @@
             <div class="message-content" v-html="renderMessageContent(message)"></div>
           </div>
 
+
           <!-- 로딩 상태일 때 표시되는 ... 말풍선 -->
           <div v-if="isLoading" class="message ai">
             <img :src="aiAvatar" alt="ai avatar" class="avatar">
@@ -51,8 +52,17 @@
           </div>
         </div>
 
+        <!-- 입력창을 항상 맨 아래에 위치시키기 -->
         <div class="input-area">
-          <textarea v-model="userInput" placeholder="메시지를 입력하세요..." @keyup.enter="sendMessage"></textarea>
+          <textarea 
+            v-model="userInput" 
+            placeholder="메시지를 입력하세요..." 
+            @keydown.enter.exact.prevent="handleEnterKey"  
+            @keydown.shift.enter="handleShiftEnter"
+            @input="adjustTextareaHeight"
+            ref="messageInput"
+          ></textarea>
+
           <button @click="sendMessage">전송</button>
           <!-- 파일 선택 버튼 추가 -->
           <input type="file" ref="fileInput" @change="handleFileSelect" style="display: none;" />
@@ -236,6 +246,24 @@ export default defineComponent({
       }
     },
 
+    adjustTextareaHeight() {
+      const textarea = this.$refs.messageInput;
+      textarea.style.height = "auto";  // 높이를 자동으로 설정
+      textarea.style.height = `${textarea.scrollHeight}px`;  // 내용에 따라 높이 설정
+    },
+
+    handleEnterKey(event) {
+      if (!event.shiftKey) {
+        // Shift 키가 눌리지 않은 경우에만 메시지 전송
+        this.sendMessage();
+      }
+    },
+
+    handleShiftEnter(event) {
+      // 기본 줄바꿈 동작을 유지함으로써 커서가 줄바꿈되도록 함
+      this.adjustTextareaHeight();  // 줄바꿈 후 높이 조정
+    },
+
     async sendMessage() {
       if (this.userInput.trim() || this.selectedFile) {
         // 텍스트 메시지를 채팅 히스토리에 추가
@@ -249,6 +277,7 @@ export default defineComponent({
         }
 
         this.userInput = '';
+        this.adjustTextareaHeight();  // 전송 후 높이도 초기화
         this.isLoading = true;  // ... 로딩 상태 활성화
         const payload = { text: this.userInputMessage, fileKey: localStorage.getItem("fileKey"), file: this.selectedFile }
 
@@ -301,8 +330,15 @@ export default defineComponent({
     handleRightClick(event, content) {
       event.preventDefault();
       this.selectedContent = content;
-      this.contextMenuX = event.clientX;
-      this.contextMenuY = event.clientY;
+
+      // 말풍선의 DOM 요소를 가져오기
+      const messageElement = event.currentTarget;
+      const rect = messageElement.getBoundingClientRect();
+      
+      // 말풍선의 우측 중앙 위치 계산
+      this.contextMenuX = rect.left / 2  // 말풍선의 우측
+      this.contextMenuY = rect.top + (rect.height / 2);  // 말풍선의 중앙
+
       this.showContextMenu = true;
     },
 
@@ -310,12 +346,38 @@ export default defineComponent({
       this.showContextMenu = false;
     },
 
+    // copyContent() {
+    //   navigator.clipboard.writeText(this.selectedContent).then(() => {
+    //     alert('답변 내용이 복사되었습니다.');
+    //   });
+    //   this.hideContextMenu();
+    // },
+    // HTTPS나 Local 환경에서만 Clipboard API가 작동해서 아래와 같이 수정
     copyContent() {
-      navigator.clipboard.writeText(this.selectedContent).then(() => {
+      try {
+        // 임시 텍스트 영역 생성
+        const textarea = document.createElement('textarea');
+        textarea.value = this.selectedContent;
+        document.body.appendChild(textarea);
+        
+        // 텍스트 영역 내용 선택
+        textarea.select();
+        textarea.setSelectionRange(0, 99999); // 선택 영역을 전체로 설정
+        
+        // 복사 명령 실행
+        document.execCommand('copy');
+        
+        // 텍스트 영역 제거
+        document.body.removeChild(textarea);
+        
         alert('답변 내용이 복사되었습니다.');
-      });
+      } catch (err) {
+        alert('복사에 실패했습니다. 수동으로 복사해 주세요.');
+      }
+      
       this.hideContextMenu();
     },
+
 
     openModal() {
       this.showModal = true;
@@ -329,12 +391,12 @@ export default defineComponent({
       }
 
       if (!this.file) {
-        alert('파일을 업로드해야 합니다.');
+        alert('원본 파일을 업로드해야 합니다.');
         return;
       }
 
       if (!this.content) {
-        alert('내용을 입력해야 합니다.');
+        alert('복사한 요약 내용을 입력해야 합니다.');
         return;
       }
 
@@ -410,17 +472,21 @@ export default defineComponent({
   max-width: 1980px;
   margin: 33px auto;
   border-radius: 20px;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;  /* 입력창이 맨 아래로 고정되도록 설정 */
+  min-height: 60vh;
+  max-height: 90vh;
+  overflow-y: auto;
   background-color: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(1px);
-  /* 배경 흐림 효과 */
   box-shadow: 0 0 15px 5px cyan, 0 0 25px 15px #2d00ff;
-  /* 외부 테두리 그림자 효과 */
 }
 
 /* 채팅 창 */
 .chat-window {
-  height: 550px;
+  min-height: 200px;  /* 최소 높이를 설정 */
+  max-height: 80vh;  /* 최대 높이를 뷰포트 높이의 80%로 설정 */
   overflow-y: auto;
   padding: 20px;
   background-color: transparent;
@@ -462,60 +528,45 @@ export default defineComponent({
 .message-content {
   padding: 10px 15px;
   border-radius: 18px;
-  max-width: calc(100% - 60px);
-  /* 아바타 크기를 고려한 최대 너비 */
+  max-width: 50%;  /* 말풍선의 최대 가로 너비를 50%로 제한 */
   background-color: rgba(255, 255, 255, 0.8);
-  /* 메시지 배경을 약간 투명하게 설정 */
 }
 
 .user .message-content {
   background-color: rgb(44, 44, 44);
-  /* 사용자 메시지 배경 */
   color: white;
   border-radius: 20px 20px 0px 20px;
+  max-width: 50%;  /* 사용자 말풍선도 50%로 제한 */
 }
 
 .ai .message-content {
   background-color: lightgray;
-  /* AI 메시지 배경 */
   color: black;
   border-radius: 20px 20px 20px 0px;
+  max-width: 50%;  /* AI 말풍선도 50%로 제한 */
 }
 
 /* 메시지 입력 영역 스타일 */
 .input-area {
   display: flex;
   align-items: center;
-  /* 세로 가운데 정렬 */
-  margin: 10px;
   background-color: rgba(255, 255, 255, 0.1);
-  /* 입력 영역 배경을 약간 투명하게 설정 */
   border-radius: 15px;
-  /* 모서리를 둥글게 */
-  width: 98%;
-  /* 전체 너비 */
-
+  padding: 10px;
 }
 
 textarea {
   flex-grow: 1;
   border: none;
-  padding: 10px;
-  resize: none;
-  /* 사용자가 크기를 조정할 수 없도록 설정 */
-  overflow: hidden;
-  /* 스크롤바를 숨김 */
-  height: 40px;
-  /* 고정된 높이 */
+  padding: 15px;
+  resize: vertical;  /* 크기 조정 기능을 활성화하여 높이 조정 가능하도록 설정 */
+  overflow: auto;  /* 내용에 따라 스크롤바 표시 */
   border-radius: 10px;
-  /* 모서리를 둥글게 */
   box-sizing: border-box;
   font-size: 15px;
-  /* 글자 크기 조정 */
   background-color: rgba(255, 255, 255, 0.1);
-  /* 메시지 입력 창 배경 */
-  color: white;
-  /* 글자 색상 */
+  color: white;  
+  height: 40px;  /* 내용에 따라 높이 자동 조정 */
 }
 
 /* 전송 버튼 스타일 */
@@ -670,6 +721,7 @@ button {
   border: 1px solid #ccc;
   z-index: 1000;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;  /* 메뉴 아이템들이 한 줄로 표시되도록 설정 */
 }
 .context-menu ul {
   list-style: none;
@@ -698,10 +750,10 @@ button {
   background-color: rgba(0, 255, 55, 0.25);
 }
 .v-dialog__content {
-  background-color: rgba(255, 255, 255, 0.75); /* 모달 배경을 초록색 투명하게 설정 */
+  background-color: rgba(255, 255, 255, 1); 
 }
 .v-card {
-  background-color: rgba(255, 255, 255, 0.75); /* 모달 카드 배경을 초록색 투명하게 설정 */
+  background-color: rgba(255, 255, 255, 1); 
 }
 /* 모달이 활성화되었을 때의 배경 블러 효과 */
 .v-overlay__scrim::after {
