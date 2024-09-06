@@ -21,7 +21,7 @@
             <img :src="require('@/assets/images/fixed/icon-A.png')" class="button-icon">
             AI 논문 커뮤니티로<br>이동하기
           </button>
-          <button class="goToDocument-button" @click="goToDocumentOriginList">
+          <button v-if="isAuthenticated" class="goToDocument-button" @click="goToDocumentOriginList">
             <img :src="require('@/assets/images/fixed/icon-B.png')" class="button-icon">
             AI 논문 자료 구경하러<br>이동하기
           </button>
@@ -54,7 +54,7 @@
 
         <!-- 입력창을 항상 맨 아래에 위치시키기 -->
         <div class="input-area">
-          <textarea 
+          <textarea v-if="isAuthenticated"
             v-model="userInput" 
             placeholder="메시지를 입력하세요..." 
             @keydown.enter.exact.prevent="handleEnterKey"  
@@ -63,10 +63,20 @@
             ref="messageInput"
           ></textarea>
 
-          <button @click="sendMessage">전송</button>
+          <textarea v-else
+            v-model="userInput" 
+            placeholder="로그인 후 이용하실 수 있습니다." 
+            @keydown.enter.exact.prevent="handleEnterKey"  
+            @keydown.shift.enter="handleShiftEnter"
+            @input="adjustTextareaHeight"
+            ref="messageInput"
+            :disabled="true"
+          ></textarea>
+
+          <button @click="sendMessage" :class="{'button-disabled': !isAuthenticated}">전송</button>
           <!-- 파일 선택 버튼 추가 -->
           <input type="file" ref="fileInput" @change="handleFileSelect" style="display: none;" />
-          <button @click="triggerFileSelect">파일 선택</button>
+          <button @click="triggerFileSelect" :class="{'button-disabled': !isAuthenticated}">파일 선택</button>
         </div>
 
         <!-- 선택된 파일명을 보여주기 위한 영역 -->
@@ -191,6 +201,10 @@ export default defineComponent({
   computed: {
     ...mapState(authenticationModule, ["isAuthenticatedKakao"]),
     ...mapState(googleAuthenticationModule, ["isAuthenticatedGoogle"]),
+    ...mapState(accountModule, ["loginType", "isAuthenticatedNormal"]),
+    isAuthenticated() {
+      return this.isAuthenticatedKakao || this.isAuthenticatedGoogle || this.isAuthenticatedNormal;
+    }
   },
   methods: {
     ...mapActions(authenticationModule, ["requestKakaoLogoutToDjango"]),
@@ -264,7 +278,13 @@ export default defineComponent({
       this.adjustTextareaHeight();  // 줄바꿈 후 높이 조정
     },
 
-    async sendMessage() {
+    async sendMessage(event) {
+      if (!this.isAuthenticated) {
+        // 로그인하지 않은 상태에서는 sendMessage 트리거 무시
+        event.preventDefault();
+        return;
+      }
+
       if (this.userInput.trim() || this.selectedFile) {
         // 텍스트 메시지를 채팅 히스토리에 추가
         if (this.userInput.trim()) {
@@ -307,7 +327,13 @@ export default defineComponent({
       }
     },
 
-    triggerFileSelect() {
+    triggerFileSelect(event) {
+      // 로그인 상태를 확인합니다
+      if (!this.isAuthenticated) {
+        // 로그인하지 않은 상태에서는 파일 선택 창을 열지 않음
+        event.preventDefault();  // 클릭 이벤트를 막아서 파일 선택 창이 열리지 않게 함
+        return;
+      }
       this.$refs.fileInput.click();
     },
 
@@ -766,6 +792,11 @@ button {
 /* 모달이 활성화된 상태에서의 전체 화면 스타일 */
 .v-dialog__content--active .v-dialog {
   backdrop-filter: inherit; 
+}
+/* 비활성화된 버튼 스타일 */
+.button-disabled {
+  opacity: 0.5;  /* 버튼을 반투명하게 만듭니다 */
+  cursor: not-allowed;  /* 클릭할 수 없음을 표시합니다 */
 }
 
 </style>

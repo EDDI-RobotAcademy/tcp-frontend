@@ -12,7 +12,7 @@
       <span>COMMUNITY Board</span>
     </v-btn>
 
-    <v-menu close-on-content-click>
+    <v-menu v-if="isAuthenticatedKakao || isAuthenticatedGoogle || isAuthenticatedNormal" close-on-content-click>
       <template v-slot:activator="{ props }">
         <v-btn v-bind="props" class="btn-text">          
           <b>AI-Document</b>
