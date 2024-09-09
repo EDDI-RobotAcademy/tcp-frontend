@@ -1,5 +1,5 @@
 <template>
-  <v-container style="margin: 15% 50px 0px 50px;">
+  <v-container>
     <!-- <v-icon class="left-arrow" @click="navigateToPrevious">mdi-chevron-left</v-icon> -->
     <v-card class="main" v-if="community" outlined>
       <v-card-title class="headline">{{ community.title }}</v-card-title>
