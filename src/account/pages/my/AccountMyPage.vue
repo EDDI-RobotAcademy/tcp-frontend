@@ -6,7 +6,7 @@
   color: white;
   border: 2px solid green;">
         <div class="company-logo" style="color: white;">Text Chat Programmers</div>
-        <v-avatar size="120" class="mt-8 avatar-margin" style="margin-top: 20px;">
+        <v-avatar size="120" class="mt-8 avatar-margin">
           <v-img :src="imageSrc"></v-img>
         </v-avatar>
         <v-card-text>
@@ -102,84 +102,84 @@ export default {
 </script>
 
 <style scoped>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* 컨테이너 설정 */
 .container {
-    margin: 0;
-    width: 100%;
-    max-width: 100vw;
-    height: 100%;
-    display: flex;                  /* Flexbox 사용하여 가운데 정렬 */
-    justify-content: center;        /* 수평 가운데 정렬 */    
-    padding: 0;
-    background: url("@/assets/images/fixed/mypage_bg.jpeg") no-repeat center center; /* 배경 이미지 설정 */
-    background-size: 50%;
-    background-color: #000;                                                     /* 배경 이미지 크기 조정 */
-    background-position: center 400px; /* 수직으로 20px 아래로 이동 */
+  margin: 0;
+  padding: 0;
+  min-width: 100vw; /* 화면 전체 너비를 차지 */
+  height: 100%; /* 화면 전체 높이를 차지 */
+  display: flex;
+  justify-content: center; /* 수평 가운데 정렬 */
+  align-items: flex-end; /* 수직 가운데 정렬 */
+  background: url("@/assets/images/fixed/mypage_bg.jpeg") no-repeat center center;
+  background-size: 50%; /* 배경 이미지를 화면에 맞춤 */
+  background-color: #000;
+  padding-top: 25vh;
+  padding-bottom: 40%;
 }
 
+/* id-card-container 설정 */
 .id-card-container {
-  position: relative;
-  padding-top: 50px;
   display: flex;
   justify-content: center;
-  margin-top: 200px;
-  max-height: 37%;  
+  align-items: center;
+  width: 100%; /* 컨테이너가 화면 너비를 꽉 채우도록 설정 */
 }
 
-.id-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s, box-shadow 0.3s;
+/* id-card 스타일 */
+.id-card {
+  border-radius: 10px;
+  overflow: hidden;
+  text-align: center;
+  width: 100%; /* id-card의 너비를 화면에 맞게 조정 */
+  max-width: 500px; /* 최대 너비를 500px로 설정 */
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 255, 55, 0.1); /* 배경색 */
+  border: 2px solid green;
+  color: white;
 }
 
+/* 기타 스타일 유지 */
 .lanyard {
   position: absolute;
-  top: -120px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 15px;
-  height: 170px;
+  top: -100px;
+  width: 100%;
+  height: 100px;
   background-color: rgba(0, 255, 55, 0.1);
-  border-radius: 5px 5px 0 0;
+  left: 50%;  
 }
 
 .lanyard::before {
   content: "";
   position: absolute;
   top: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 50%;  
   width: 30px;
   height: 10px;
   background-color: darkgreen;
   border-radius: 5px 5px 0 0;
 }
 
-.id-card {
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  position: relative;
-  padding-top: 20px;
-}
-
 .company-logo {
-  position: absolute;
-  top: 15px;
-  left: 0;
-  right: 0;
+  font-size: 1.5rem;
   font-weight: bold;
-  font-size: 1.2em;
-  color: #333;
-}
-
-.avatar-margin {
-  margin-top: 60px;
+  margin-bottom: 20px;
 }
 
 .v-avatar {
   margin: 0 auto;
   border: 3px solid #f0f0f0;
+  margin-top: 20px;
+}
+
+.avatar-margin {
+  margin-top: 20px;
 }
 
 .floating-menu-container {
@@ -197,11 +197,6 @@ export default {
   border-radius: 50%;
   width: 60px;
   height: 60px;
-  margin-right: 13px;
-}
-
-.floating-button:hover {
-  background-color: #333;
 }
 
 .floating-menu {
@@ -215,8 +210,14 @@ export default {
   background-color: #000;
   color: #fff;
 }
-.menu-item:hover {
-  background-color: #333;
-  color: #4caf50;
+
+@media (max-width: 600px) {
+  .id-card {
+    max-width: 90%; /* 작은 화면에서는 최대 너비를 줄임 */
+  }
+
+  .id-card-container {
+    margin-top: 0; /* 작은 화면에서는 여백을 줄여서 중앙에 맞춤 */
+  }
 }
 </style>

@@ -27,7 +27,11 @@ export default defineComponent({
 
 <style>
 
-* {margin:0; padding:0;}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 /* Reset CSS 적용 */
 html, body, div, span, applet, object, iframe,
@@ -65,10 +69,6 @@ table {
   border-spacing: 0;
 }
 
-/* 크로스 브라우징을 위한 CSS */
-* {
-  box-sizing: border-box;
-}
 
 input, textarea, button {
   font-family: inherit;
