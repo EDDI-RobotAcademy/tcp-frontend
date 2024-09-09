@@ -496,7 +496,7 @@ export default defineComponent({
 .prompt-container {
   width: 80%;
   max-width: 1980px;
-  margin: 10px auto;
+  margin: 30px auto;
   border-radius: 20px;
   display: flex;
   flex-direction: column;
