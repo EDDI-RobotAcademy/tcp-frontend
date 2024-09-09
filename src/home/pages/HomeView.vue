@@ -474,7 +474,7 @@ export default defineComponent({
   /* Flexbox 사용하여 행으로 정렬 */
   align-items: center;
   /* 수직 가운데 정렬 */
-  justify-content: space-between;
+  justify-content: flex-start;
   /* 텍스트와 버튼 사이 여백 */
   width: 100%;
   max-width: 1200px;
@@ -496,11 +496,11 @@ export default defineComponent({
 .prompt-container {
   width: 80%;
   max-width: 1980px;
-  margin: 33px auto;
+  margin: 10px auto;
   border-radius: 20px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;  /* 입력창이 맨 아래로 고정되도록 설정 */
+  justify-content: flex-end;  /* 입력창이 맨 아래로 고정되도록 설정 */
   min-height: 60vh;
   max-height: 90vh;
   overflow-y: auto;
@@ -511,12 +511,13 @@ export default defineComponent({
 
 /* 채팅 창 */
 .chat-window {
-  min-height: 200px;  /* 최소 높이를 설정 */
-  max-height: 80vh;  /* 최대 높이를 뷰포트 높이의 80%로 설정 */
-  overflow-y: auto;
+  flex-grow: 1;  /* 대화 내용이 영역을 채우도록 설정 */
   padding: 20px;
+  overflow-y: auto;  /* 대화 내용이 많아지면 스크롤바 추가 */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* 대화가 위에서부터 쌓이도록 설정 */
   background-color: transparent;
-  /* 배경을 투명하게 설정 */
 }
 
 /* 각 메시지의 스타일 */
@@ -562,14 +563,14 @@ export default defineComponent({
   background-color: rgb(44, 44, 44);
   color: white;
   border-radius: 20px 20px 0px 20px;
-  max-width: 50%;  /* 사용자 말풍선도 50%로 제한 */
+  max-width: 100%;  /* 사용자 말풍선도 50%로 제한 */
 }
 
 .ai .message-content {
   background-color: lightgray;
   color: black;
   border-radius: 20px 20px 20px 0px;
-  max-width: 50%;  /* AI 말풍선도 50%로 제한 */
+  max-width: 100%;  /* AI 말풍선도 50%로 제한 */
 }
 
 /* 메시지 입력 영역 스타일 */
@@ -579,6 +580,10 @@ export default defineComponent({
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 15px;
   padding: 10px;
+  gap: 10px; /* 버튼과 입력창 사이의 간격 */
+  height: auto; /* 고정 높이를 주지 않고, 내용에 따라 조절되도록 설정 */
+  max-height: 80px; /* 입력 영역이 너무 커지지 않도록 최대 높이 설정 */
+  margin-bottom: 0;  /* 아래 여백을 제거하여 파일명과 붙게 설정 */
 }
 
 textarea {
@@ -592,7 +597,8 @@ textarea {
   font-size: 15px;
   background-color: rgba(255, 255, 255, 0.1);
   color: white;  
-  height: 40px;  /* 내용에 따라 높이 자동 조정 */
+  height: auto; /* 고정 높이를 제거하고 자동 조정 */
+  max-height: 100px; /* 최대 높이 제한 */
 }
 
 /* 전송 버튼 스타일 */
@@ -600,11 +606,15 @@ button {
   background-color: white;
   color: black;
   border: none;
-  padding: 10px 10px;
-  margin-left: 10px;
+  padding: 10px;
+  margin: 0; /* 버튼들 사이의 불필요한 여백 제거 */
   cursor: pointer;
   border-radius: 20px;
   font-size: 16px;
+}
+
+button + button {
+  margin-left: 10px; /* 파일 선택 버튼과 전송 버튼 사이의 간격 */
 }
 
 /* 텍스트 및 버튼 컨테이너 스타일 */
@@ -735,9 +745,14 @@ button {
 
 /* 선택된 파일명과 전송 버튼을 표시하기 위한 스타일 */
 .selected-file {
-  margin-right: 20px;
-  text-align: right;
-  color: white;
+  margin: 10px;  /* 너무 붙지 않게 약간의 여백 설정 */
+  text-align: right;  /* 파일명을 오른쪽 정렬 */
+  color: rgb(0, 255, 26);
+  white-space: nowrap;  /* 파일명이 한 줄로 표시되도록 설정 */
+  overflow: hidden;  /* 넘치는 텍스트는 잘리게 설정 */
+  text-overflow: ellipsis;  /* 넘치는 부분은 말줄임표로 표시 */
+  max-width: 100%;  /* 최대 너비를 100%로 설정하여 영역 내에서만 표시 */
+  max-height: fit-content;
 }
 
 /* 컨텍스트 메뉴 스타일 */
